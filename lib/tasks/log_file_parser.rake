@@ -1,7 +1,7 @@
 namespace :monitoring do
   desc 'Log parser'
   task :parse_log_file => :environment do
-    day   = 3
+    day   = 4
     month = 11
     year  = 2016
   	
@@ -62,9 +62,9 @@ namespace :monitoring do
         monitoring[:controller][:number_of_requests_in_hour][timestamp_hour] ||= 0
         monitoring[:controller][:number_of_requests_in_hour][timestamp_hour] += 1 
         monitoring[:controller][:number_of_requests] += 1 
-        monitoring[:controller][:view_runtime_max] = view_runtime if monitoring[:controller][:view_runtime_max] < view_runtime
-        monitoring[:controller][:db_runtime_max]   = db_runtime   if monitoring[:controller][:db_runtime_max] < db_runtime
-        monitoring[:controller][:duration_max]     = duration     if monitoring[:controller][:duration_max] < duration
+        monitoring[:controller][:view_runtime_max] = view_runtime if monitoring[:controller][:view_runtime_max] < (view_runtime || 0)
+        monitoring[:controller][:db_runtime_max]   = db_runtime   if monitoring[:controller][:db_runtime_max] < (db_runtime || 0)
+        monitoring[:controller][:duration_max]     = duration     if monitoring[:controller][:duration_max] < (duration || 0)
 
         monitoring[:controller]["number_of_#{status}"]   ||= 0
         monitoring[:controller]["number_of_#{status}"]   +=1
@@ -74,9 +74,9 @@ namespace :monitoring do
         monitoring[controller][:number_of_requests_in_hour][timestamp_hour] ||= 0 
         monitoring[controller][:number_of_requests_in_hour][timestamp_hour] += 1 
         monitoring[controller][:number_of_requests] += 1 
-        monitoring[controller][:view_runtime_max] = view_runtime if monitoring[controller][:view_runtime_max] < view_runtime
-        monitoring[controller][:db_runtime_max]   = db_runtime   if monitoring[controller][:db_runtime_max] < db_runtime
-        monitoring[controller][:duration_max]     = duration     if monitoring[controller][:duration_max] < duration
+        monitoring[controller][:view_runtime_max] = view_runtime if monitoring[controller][:view_runtime_max] < (view_runtime || 0)
+        monitoring[controller][:db_runtime_max]   = db_runtime   if monitoring[controller][:db_runtime_max] < (db_runtime || 0)
+        monitoring[controller][:duration_max]     = duration     if monitoring[controller][:duration_max] < (duration || 0)
 
         monitoring[controller]["number_of_#{status}"]   ||= 0
         monitoring[controller]["number_of_#{status}"]   +=1
@@ -85,9 +85,9 @@ namespace :monitoring do
         monitoring[controller_action][:number_of_requests_in_hour][timestamp_hour] ||= 0
         monitoring[controller_action][:number_of_requests_in_hour][timestamp_hour] += 1
         monitoring[controller_action][:number_of_requests] += 1
-        monitoring[controller_action][:view_runtime_max] = view_runtime if monitoring[controller_action][:view_runtime_max] < view_runtime
-        monitoring[controller_action][:db_runtime_max]   = db_runtime   if monitoring[controller_action][:db_runtime_max] < db_runtime
-        monitoring[controller_action][:duration_max]     = duration if monitoring[controller_action][:duration_max] < duration
+        monitoring[controller_action][:view_runtime_max] = view_runtime if monitoring[controller_action][:view_runtime_max] < (view_runtime || 0)
+        monitoring[controller_action][:db_runtime_max]   = db_runtime   if monitoring[controller_action][:db_runtime_max] < (db_runtime || 0)
+        monitoring[controller_action][:duration_max]     = duration if monitoring[controller_action][:duration_max] < (duration || 0)
  
         monitoring[controller_action]["number_of_#{status}"]   ||= 0
         monitoring[controller_action]["number_of_#{status}"]   +=1
@@ -102,6 +102,7 @@ namespace :monitoring do
       monitoring[:severity][:number_of_warn]    += 1 if severity == "WARN"
 
     end#IO.foreach("./log/development.log") do |x| 
+    byebug
   end#task :parse_log_file => :environment do
 end
 
