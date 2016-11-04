@@ -29,7 +29,7 @@ namespace :monitoring do
       unless line.empty?
         severity        = line["severity"]
         timestamp_str   = line["@timestamp"] || line["time"]
-        timestamp       = Time.parse(timestamp_str).utc
+        timestamp       = Time.parse(timestamp_str)
         timestamp_hour  = Time.parse(timestamp_str).hour
         timestamp_day   = Time.parse(timestamp_str).day
         timestamp_month = Time.parse(timestamp_str).month
