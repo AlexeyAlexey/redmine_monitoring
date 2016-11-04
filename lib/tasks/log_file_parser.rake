@@ -102,7 +102,7 @@ namespace :monitoring do
       monitoring[:severity][:number_of_warn]    += 1 if severity == "WARN"
 
     end#IO.foreach("./log/development.log") do |x| 
-    byebug
+    #MonitoringResult.create(project_id: 1, server_id: 1, monitoring_day: Time.new(year, month, day).to_s, result: monitoring)
   end#task :parse_log_file => :environment do
 end
 
