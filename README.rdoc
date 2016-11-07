@@ -1,5 +1,7 @@
 = redmine_as_monitoring_server
 
+http://c3js.org/gettingstarted.html
+https://d3js.org/
 
 {"JqueryUserStylesController": {actions: { "user_style": {
 	                                                       number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
@@ -43,18 +45,6 @@
   }
 }
 
-
-Time.parse(line["@timestamp"]).utc.hour
-
-line["payload"]["status"]# => 200
-
-line["payload"]["view_runtime"]#=> 2742.154952
-
-line["payload"]["db_runtime"]#=> 51.33422399999999
-
-line["payload"]["controller"]#=> "ContactsController"
-
-line["payload"]["action"]#=> "index"
 
 
 {"#{line["payload"]["controller"]}:#{line["payload"]["action"]}": {  number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],

@@ -4,20 +4,22 @@ namespace :monitoring do
     day   = 4
     month = 11
     year  = 2016
-  	
+  	byebug
   	monitoring = {controller: {	number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-							    number_of_requests: 0,
-							    view_runtime_max: 0,
-							    db_runtime_max: 0,
-							    duration_max: 0,
-							    controllers_list: []
-							  },
-				   severity: { number_of_error: 0,
-					  	  	   number_of_fatal: 0,
-							   number_of_unknown: 0,
-							   number_of_warn: 0
+							                  number_of_requests: 0,
+							                  view_runtime_max: 0,
+							                  db_runtime_max: 0,
+							                  duration_max: 0,
+                                statuses: {}
+							                },
+				          severity: { number_of_error: 0,
+					  	  	            number_of_fatal: 0,
+							                number_of_unknown: 0,
+							                number_of_warn: 0
 							  }
 		         }
+    
+
     IO.foreach("./log/development.log") do |x| 
       line = {}
       begin
@@ -38,27 +40,32 @@ namespace :monitoring do
       if line["name"] == "process_action.action_controller" and timestamp_day == day and timestamp_month == month and timestamp_year == year
 
       	controller = "#{line["payload"]["controller"]}"
-      	controller_action = "#{line["payload"]["controller"]}:#{line["payload"]["action"]}"
+      	action     = "#{line["payload"]["action"]}"
 		
-		status       = line["payload"]["status"]# => 200
-		view_runtime = line["payload"]["view_runtime"]#=> 2742.154952
-		db_runtime   = line["payload"]["db_runtime"]#=> 51.33422399999999
-		duration     = line["duration"]
+		    status       = line["payload"]["status"]# => 200
+		    view_runtime = line["payload"]["view_runtime"]#=> 2742.154952
+		    db_runtime   = line["payload"]["db_runtime"]#=> 51.33422399999999
+		    duration     = line["duration"]
 		
-      	monitoring[controller_action] ||= {  number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-							                 number_of_requests: 0,
-							                 view_runtime_max: 0,
-							                 db_runtime_max: 0,
-							                 duration_max: 0
-                                           }
-        monitoring[controller] ||= { number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                                     number_of_requests: 0,
-                                     view_runtime_max: 0,
-                                     db_runtime_max: 0,
-                                     duration_max: 0
-	                               }
+        monitoring[controller] ||= {}
+        monitoring[controller][:controller] ||= {number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                number_of_requests: 0,
+                view_runtime_max: 0,
+                db_runtime_max: 0,
+                duration_max: 0,
+                statuses: {}
+               }
+
+      	monitoring[controller][action] ||= {number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                number_of_requests: 0,
+                view_runtime_max: 0,
+                db_runtime_max: 0,
+                duration_max: 0,
+                statuses: {}
+               }
+
+        
         #summary
-        monitoring[:controller][:controllers_list] << controller unless monitoring[:controller][:controllers_list].include?(controller)
         monitoring[:controller][:number_of_requests_in_hour][timestamp_hour] ||= 0
         monitoring[:controller][:number_of_requests_in_hour][timestamp_hour] += 1 
         monitoring[:controller][:number_of_requests] += 1 
@@ -66,31 +73,31 @@ namespace :monitoring do
         monitoring[:controller][:db_runtime_max]   = db_runtime   if monitoring[:controller][:db_runtime_max] < (db_runtime || 0)
         monitoring[:controller][:duration_max]     = duration     if monitoring[:controller][:duration_max] < (duration || 0)
 
-        monitoring[:controller]["number_of_#{status}"]   ||= 0
-        monitoring[:controller]["number_of_#{status}"]   +=1
+        monitoring[:controller][:statuses]["#{status}"]   ||= 0
+        monitoring[:controller][:statuses]["#{status}"]   +=1
 
 
         #summary controller
-        monitoring[controller][:number_of_requests_in_hour][timestamp_hour] ||= 0 
-        monitoring[controller][:number_of_requests_in_hour][timestamp_hour] += 1 
-        monitoring[controller][:number_of_requests] += 1 
-        monitoring[controller][:view_runtime_max] = view_runtime if monitoring[controller][:view_runtime_max] < (view_runtime || 0)
-        monitoring[controller][:db_runtime_max]   = db_runtime   if monitoring[controller][:db_runtime_max] < (db_runtime || 0)
-        monitoring[controller][:duration_max]     = duration     if monitoring[controller][:duration_max] < (duration || 0)
+        monitoring[controller][:controller][:number_of_requests_in_hour][timestamp_hour] ||= 0 
+        monitoring[controller][:controller][:number_of_requests_in_hour][timestamp_hour] += 1 
+        monitoring[controller][:controller][:number_of_requests] += 1 
+        monitoring[controller][:controller][:view_runtime_max] = view_runtime if monitoring[controller][:controller][:view_runtime_max] < (view_runtime || 0)
+        monitoring[controller][:controller][:db_runtime_max]   = db_runtime   if monitoring[controller][:controller][:db_runtime_max] < (db_runtime || 0)
+        monitoring[controller][:controller][:duration_max]     = duration     if monitoring[controller][:controller][:duration_max] < (duration || 0)
 
-        monitoring[controller]["number_of_#{status}"]   ||= 0
-        monitoring[controller]["number_of_#{status}"]   +=1
+        monitoring[controller][:controller][:statuses]["#{status}"]   ||= 0
+        monitoring[controller][:controller][:statuses]["#{status}"]   +=1
         
-        #summary controller action
-        monitoring[controller_action][:number_of_requests_in_hour][timestamp_hour] ||= 0
-        monitoring[controller_action][:number_of_requests_in_hour][timestamp_hour] += 1
-        monitoring[controller_action][:number_of_requests] += 1
-        monitoring[controller_action][:view_runtime_max] = view_runtime if monitoring[controller_action][:view_runtime_max] < (view_runtime || 0)
-        monitoring[controller_action][:db_runtime_max]   = db_runtime   if monitoring[controller_action][:db_runtime_max] < (db_runtime || 0)
-        monitoring[controller_action][:duration_max]     = duration if monitoring[controller_action][:duration_max] < (duration || 0)
+        #monitoring["WelcomeController"]["index"]
+        monitoring[controller][action][:number_of_requests_in_hour][timestamp_hour] ||= 0
+        monitoring[controller][action][:number_of_requests_in_hour][timestamp_hour] += 1
+        monitoring[controller][action][:number_of_requests] += 1
+        monitoring[controller][action][:view_runtime_max] = view_runtime if monitoring[controller][action][:view_runtime_max] < (view_runtime || 0)
+        monitoring[controller][action][:db_runtime_max]   = db_runtime   if monitoring[controller][action][:db_runtime_max] < (db_runtime || 0)
+        monitoring[controller][action][:duration_max]     = duration     if monitoring[controller][action][:duration_max] < (duration || 0)
  
-        monitoring[controller_action]["number_of_#{status}"]   ||= 0
-        monitoring[controller_action]["number_of_#{status}"]   +=1
+        monitoring[controller][action][:statuses]["#{status}"]   ||= 0
+        monitoring[controller][action][:statuses]["#{status}"]   +=1
                                  
 
       end#if "process_action.action_controller"
@@ -102,6 +109,7 @@ namespace :monitoring do
       monitoring[:severity][:number_of_warn]    += 1 if severity == "WARN"
 
     end#IO.foreach("./log/development.log") do |x| 
+
     #MonitoringResult.create(project_id: 1, server_id: 1, monitoring_day: Time.new(year, month, day).to_s, result: monitoring)
   end#task :parse_log_file => :environment do
 end
