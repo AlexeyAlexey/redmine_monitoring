@@ -1,6 +1,7 @@
 ActionDispatch::Callbacks.to_prepare do
   require_dependency 'redmine_monitoring_active_support_notifications/process_action_action_controller'
 end
+RedmineMonitoring::AppendInfoToPayload
 
 RedmineApp::Application.config.middleware.use(RedmineMonitoring::RedmineMonitoringMiddleware)
 

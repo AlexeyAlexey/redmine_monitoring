@@ -4,8 +4,8 @@ namespace :monitoring do
     day   = 4
     month = 11
     year  = 2016
-  	byebug
-  	monitoring = {controller: {	number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+  	
+  	monitoring = {controllers: {	number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 							                  number_of_requests: 0,
 							                  view_runtime_max: 0,
 							                  db_runtime_max: 0,
@@ -66,15 +66,15 @@ namespace :monitoring do
 
         
         #summary
-        monitoring[:controller][:number_of_requests_in_hour][timestamp_hour] ||= 0
-        monitoring[:controller][:number_of_requests_in_hour][timestamp_hour] += 1 
-        monitoring[:controller][:number_of_requests] += 1 
-        monitoring[:controller][:view_runtime_max] = view_runtime if monitoring[:controller][:view_runtime_max] < (view_runtime || 0)
-        monitoring[:controller][:db_runtime_max]   = db_runtime   if monitoring[:controller][:db_runtime_max] < (db_runtime || 0)
-        monitoring[:controller][:duration_max]     = duration     if monitoring[:controller][:duration_max] < (duration || 0)
+        monitoring[:controllers][:number_of_requests_in_hour][timestamp_hour] ||= 0
+        monitoring[:controllers][:number_of_requests_in_hour][timestamp_hour] += 1 
+        monitoring[:controllers][:number_of_requests] += 1 
+        monitoring[:controllers][:view_runtime_max] = view_runtime if monitoring[:controllers][:view_runtime_max] < (view_runtime || 0)
+        monitoring[:controllers][:db_runtime_max]   = db_runtime   if monitoring[:controllers][:db_runtime_max] < (db_runtime || 0)
+        monitoring[:controllers][:duration_max]     = duration     if monitoring[:controllers][:duration_max] < (duration || 0)
 
-        monitoring[:controller][:statuses]["#{status}"]   ||= 0
-        monitoring[:controller][:statuses]["#{status}"]   +=1
+        monitoring[:controllers][:statuses]["#{status}"]   ||= 0
+        monitoring[:controllers][:statuses]["#{status}"]   +=1
 
 
         #summary controller
