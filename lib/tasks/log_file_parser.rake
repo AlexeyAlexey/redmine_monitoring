@@ -1,6 +1,6 @@
 namespace :monitoring do
   desc 'Log parser
-    rake monitoring:statistic_parse_log_file log_file_path="./log/development.log" day=10 month=11 year=2016 project_id=1
+    rake monitoring:statistic_parse_log_file log_file_path="./log/development.log" day=10 month=11 year=2016 project_id=1 server_id=1
   '
   #rake monitoring:statistic_parse_log_file log_file_path="./log/development.log" day=10 month=11 year=2016 project_id=1
   task :statistic_parse_log_file => :environment do
@@ -10,6 +10,7 @@ namespace :monitoring do
     year  = ENV['year'].to_i
 
     project_id = ENV['project_id'].to_i
+    server_id  = ENV['server_id'].to_i
   	
   	monitoring = {controllers: {	number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 							                  number_of_requests: 0,
@@ -115,8 +116,9 @@ namespace :monitoring do
         monitoring[:severity][:number_of_warn]    += 1 if severity == "WARN"
       end
     end#IO.foreach("./log/development.log") do |x| 
+    
     if project_id != 0 and Redmine::Plugin.registered_plugins.include?(:redmine_monitoring_server)
-      MonitoringResult.create(project_id: 1, server_id: 1, monitoring_day: Time.new(year, month, day).to_s, result: monitoring)
+      MonitoringResult.create(project_id: project_id, server_id: server_id, monitoring_day: Time.new(year, month, day).to_s, result: monitoring)
     end
   end#task :parse_log_file => :environment do
 
