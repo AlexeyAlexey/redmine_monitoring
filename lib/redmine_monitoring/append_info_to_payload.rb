@@ -3,7 +3,9 @@ module RedmineMonitoring
     class ActionController::Base
       def append_info_to_payload(payload)
         super
-        payload[:ip] = request.remote_ip
+        payload[:ip]         = request.remote_ip
+        payload[:user_id]    = User.current.try(:id)
+        payload[:session_id] = request.headers["rack.session"]["session_id"] || ""
         payload[:http_user_agent] = request.headers["HTTP_USER_AGENT"]
         #headers
         payload[:headers] ||= {}
@@ -30,6 +32,7 @@ module RedmineMonitoring
         payload[:headers]["HTTP_VERSION"]                   = request.headers["HTTP_VERSION"]
         payload[:headers]["REQUEST_PATH"]                   = request.headers["REQUEST_PATH"]
         payload[:headers]["ORIGINAL_FULLPATH"]              = request.headers["ORIGINAL_FULLPATH"]
+        payload[:headers]["HTTP_REFERER"]                   = request.headers["HTTP_REFERER"] || ""
       end
     end
   end
