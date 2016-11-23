@@ -7,49 +7,21 @@
  <%end%>
 
 
-
-<div id="summarized_charts">
-  <div id="container_controllers">
-    <%=render partial: "pie_chart_controllers", locals: {monitoring: @monitoring, controllers_list: @pie_chart_controllers}%>
-  </div>
-  <div id="container_controllers_statuses">
-    <%=render partial: "pie_chart_controllers_statuses", locals: {monitoring: @monitoring}%>
-  </div>
-  <div id="container_controllers_number_of_requests_in_hour">
-      <%=render partial: "chart_controllers_number_of_requests_in_hour", locals: {monitoring: @monitoring, controllers_list: @pie_chart_controllers}%>
-  </div>
-
+<div id="filter">
+  <%=render partial: "filter", locals: {all_controllers: @all_controllers, monitoring_days: @monitoring_days, filter_form: @filter_form}%>
 </div>
 
-<div id="details_charts">
-  <div id="container_controller_statuses">
-    <%@controllers_list.each do |controller_name|%>
-      <%=render partial: "pie_chart_controller_statuses", locals: {monitoring: @monitoring, controller_name: controller_name}%>
-    <%end%>
-  </div>
-  <div id="container_controller_action_statuses">
-    <%@controllers_list.each do |controller_name|%>
-      <%actions_list = @monitoring.result[controller_name].keys.delete_if{|el| el == "controller"}%>
+<%unless @monitoring.blank?%>
+  <br>
+  <h1><%=l(:monitoring_day, scope: :redmine_monitoring)%> <%=h @monitoring.monitoring_day%></h1>
+  <br>
 
-      <%actions_list.each do |action_name|%>
-        <%=render partial: "pie_chart_controller_action_statuses", locals: {monitoring: @monitoring, controller_name: controller_name, action_name: action_name}%>
-      <%end%>
-    <%end%>
+  <div id="summarized_charts">
+    <%=render partial: "summarized_charts", locals: {monitoring: @monitoring, all_controllers: @all_controllers}%>
   </div>
 
-  <div id="container_actions">
-    <%@controllers_list.each do |controller_name|%>
-      <%=render partial: "pie_chart_actions", locals: {monitoring: @monitoring, controller_name: controller_name}%>
-    <%end%>
+  <div id="detail_charts">
+    <%=render partial: "detail_charts", locals: {monitoring: @monitoring, controllers_list: @controllers_list}%>
   </div>
-
-  <div id="container_actions_number_of_requests_in_hour">
-    <%@controllers_list.each do |controller_name|%>
-      <%=render partial: "chart_actions_number_of_requests_in_hour", locals: {monitoring: @monitoring, controller_name: controller_name}%>
-    <%end%>
-  </div>
-
-</div>
-
- 
+<%end%>
  

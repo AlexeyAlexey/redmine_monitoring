@@ -5,3 +5,6 @@ ru:
     controllers_number_of_requests: Количество запросов к контроллеру
     number_of_response_statuses: Количество статусов ответов
     number_of_requests_in_hour_to_controller: Количество запросов к контроллеру в час
+    date: Дата
+    controller_name: Контроллер
+    monitoring_day: Monitoring Day

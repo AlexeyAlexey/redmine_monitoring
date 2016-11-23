@@ -1,0 +1,31 @@
+<div id="container_actions">
+  <%@controllers_list.each do |controller_name|%>
+    <%=render partial: "pie_chart_actions", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+  <%end%>
+</div>
+
+<div id="container_actions_number_of_requests_in_hour">
+  <%@controllers_list.each do |controller_name|%>
+    <%=render partial: "chart_actions_number_of_requests_in_hour", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+  <%end%>
+</div>
+
+<div id="container_controller_statuses">
+  <%@controllers_list.each do |controller_name|%>
+    <%=render partial: "pie_chart_controller_statuses", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+  <%end%>
+</div>
+
+
+<%@controllers_list.each do |controller_name|%>
+  <%actions_list = @monitoring.result[controller_name].keys.delete_if{|el| el == "controller"}%>
+  <h1><%=h controller_name%></h1>
+  <%actions_list.each do |action_name|%>
+    <div class="container_controller_action_statuses" style="position: relative; display: inline-block;">
+        <%=render partial: "pie_chart_controller_action_statuses", locals: {monitoring: @monitoring, controller_name: controller_name, action_name: action_name}%>
+        </div>
+    <%end%>
+<%end%>
+
+
+  

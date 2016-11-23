@@ -5,4 +5,7 @@ en:
     controllers_number_of_requests: Number of requests to Controller
     number_of_response_statuses: Number of Response Statuses
     number_of_requests_in_hour_to_controller: Number of requests in hour to a controller
+    date: Date
+    controller_name: Controller Name
+    monitoring_day: Monitoring Day
 

@@ -1,10 +1,16 @@
-<h1><%=controller_name%> <%=action_name%>  controller action statuses</h1>
-<div id="pie_chart_<%=controller_name.downcase%>_<%=action_name.downcase%>_statuses"></div>
-
+<h4><%=action_name%></h4>
+<div id="pie_chart_<%=controller_name.downcase%>_<%=action_name.downcase%>_statuses" >
+  
+</div>
+  
 <script type="text/javascript">
 
   var pie_chart_controller_statuses = c3.generate({
     bindto: '#pie_chart_<%=controller_name.downcase%>_<%=action_name.downcase%>_statuses',
+    size: {
+        width: 200,
+        height: 200,
+    },
     data: {
         // iris data from R
         columns: [

@@ -1,0 +1,10 @@
+<div id="container_controllers">
+  <%=render partial: "pie_chart_controllers", locals: {monitoring: monitoring, controllers_list: all_controllers}%>
+</div>
+<div id="container_controllers_statuses">
+  <%=render partial: "pie_chart_controllers_statuses", locals: {monitoring: monitoring}%>
+</div>
+<div id="container_controllers_number_of_requests_in_hour">
+    <%=render partial: "chart_controllers_number_of_requests_in_hour", locals: {monitoring: monitoring, controllers_list: all_controllers}%>
+</div>
+
