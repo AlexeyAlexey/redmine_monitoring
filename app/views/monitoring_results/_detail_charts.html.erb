@@ -10,21 +10,26 @@
   <%end%>
 </div>
 
-<div id="container_controller_statuses">
+
   <%@controllers_list.each do |controller_name|%>
-    <%=render partial: "pie_chart_controller_statuses", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+    <div class="container_controller_statuses" style="position: relative; display: inline-block; border: solid;">
+      <h1><%=h controller_name%> statuses</h1>
+      <%=render partial: "pie_chart_controller_statuses", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+    </div>
   <%end%>
-</div>
+
 
 
 <%@controllers_list.each do |controller_name|%>
-  <%actions_list = @monitoring.result[controller_name].keys.delete_if{|el| el == "controller"}%>
-  <h1><%=h controller_name%></h1>
-  <%actions_list.each do |action_name|%>
-    <div class="container_controller_action_statuses" style="position: relative; display: inline-block;">
+  <div style="border: 1px solid; margin-top: 10px;">
+    <%actions_list = @monitoring.result[controller_name].keys.delete_if{|el| el == "controller"}%>
+    <h1><%=h controller_name%></h1>
+    <%actions_list.each do |action_name|%>
+      <div class="container_controller_action_statuses" style="position: relative; display: inline-block; border: solid;">
         <%=render partial: "pie_chart_controller_action_statuses", locals: {monitoring: @monitoring, controller_name: controller_name, action_name: action_name}%>
         </div>
     <%end%>
+  </div>
 <%end%>
 
 
