@@ -8,9 +8,13 @@ RedmineApp::Application.config.middleware.use(RedmineMonitoring::RedmineMonitori
 RedmineApp::Application.config.middleware.insert_before "ActionDispatch::Static", "RequestStore::Middleware"
 RedmineApp::Application.config.middleware.insert_after "RequestStore::Middleware", "RedmineMonitoring::RedmineMonitoringMiddleware"
 
+rails_environment = (ENV["RAILS_ENV"] || "production")
+monitoring_settings = YAML::load(File.open('plugins/redmine_monitoring/config/monitoring.yml'))[rails_environment]
+
 RedmineApp::Application.config.logstash = LogStashLogger.configure do |config|
   config.customize_event do |event|
     event["request_unique_id"] = RequestStore.store[:request_unique_id]
+    event["project_id"] = monitoring_settings["project_id"]
   end
 end
 
@@ -22,4 +26,11 @@ Redmine::Plugin.register :redmine_monitoring do
   version '0.0.1'
   url 'http://example.com/path/to/plugin'
   author_url 'http://example.com/about'
+
+
+  project_module :redmine_monitoring do
+    permission :monitoring_results, { :monitoring_results => [:index]}
+  end
+
+  menu :project_menu, :monitoring_results, { :controller => 'monitoring_results', :action => 'index' }, :caption => 'Redmine Monitoring Results'
 end

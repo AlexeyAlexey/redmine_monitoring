@@ -1,0 +1,33 @@
+<h1><%=l(:number_of_response_statuses, scope: :redmine_monitoring)%></h1>
+<div id="pie_chart_controllers_statuses"></div>
+
+<script type="text/javascript">
+
+  var pie_chart_controllers_statuses = c3.generate({
+    bindto: '#pie_chart_controllers_statuses',
+    data: {
+        // iris data from R
+        columns: [
+          <%monitoring.result["controllers"]["statuses"].each_pair do |key, value|%>
+            ["<%=key%>", <%=value%>],
+          <%end%>
+        ],
+        type : 'pie',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    pie: {
+        label: {
+            format: function (value, ratio, id) {
+                return d3.format('')(value);
+            }
+        }
+    },
+    legend: {
+      position: 'right'
+    }
+  });
+
+
+</script>

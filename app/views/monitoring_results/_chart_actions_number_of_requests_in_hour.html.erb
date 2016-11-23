@@ -1,0 +1,47 @@
+<%actions_list = monitoring.result[controller_name].keys
+  actions_list.shift
+%>
+
+<h1>chart_actions_number_of_requests_in_hour <%=controller_name%></h1>
+<div id="chart_<%=controller_name%>_actions_number_of_requests_in_hour">
+  
+</div>
+
+<script type="text/javascript">
+
+  var controller_number_of_requests_in_hour = c3.generate({
+    bindto: '#chart_<%=controller_name%>_actions_number_of_requests_in_hour',
+    data: {
+    	x: 'x',
+        // iris data from R
+        columns: [
+          ['x', 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+          <%actions_list.each do |action_name|%>
+            <%=
+                number_of_requests_in_hour = monitoring.result[controller_name][action_name]["number_of_requests_in_hour"]
+                first_el = number_of_requests_in_hour.shift
+                chart_number_of_requests_in_hour = raw( ["Number of Requests in hour #{controller_name} #{action_name}", ] + number_of_requests_in_hour.push(first_el))
+
+                raw chart_number_of_requests_in_hour
+              %>,
+          <%end%>
+        ],
+        type : 'bar',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    pie: {
+        label: {
+            format: function (value, ratio, id) {
+                return d3.format('')(value);
+            }
+        }
+    },
+    legend: {
+      position: 'right'
+    }
+  });
+
+
+</script>

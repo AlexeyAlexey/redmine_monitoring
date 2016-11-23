@@ -170,5 +170,47 @@ namespace :monitoring do
     #end
 
   end
+  #rake monitoring:read_and_write_into_db log_file_path="./log/development.log" begin_hour=1 begin_day=10 begin_month=11 begin_year=2016 project_id=1
+  task :read_and_write_into_db => :environment do
+    #file_path = "./log/development.log"
+    log_file_path = ENV['log_file_path']
+    begin_hour    = ENV['begin_hour'].to_i
+    begin_day     = ENV['begin_day'].to_i
+    begin_month   = ENV['begin_month'].to_i
+    begin_year    = ENV['begin_year'].to_i
+
+    project_id = ENV['project_id'].to_i
+    server_id  = ENV['server_id'].to_i
+
+    IO.foreach(log_file_path) do |x| 
+      line = {}
+      begin
+        line = JSON.parse(x)
+      rescue Exception => e
+        
+      end
+      
+      unless line.empty?
+        severity        = line["severity"]
+        timestamp_str   = line["@timestamp"] || line["time"]
+        timestamp       = Time.parse(timestamp_str)
+        timestamp_hour  = Time.parse(timestamp_str).hour
+        timestamp_day   = Time.parse(timestamp_str).day
+        timestamp_month = Time.parse(timestamp_str).month
+        timestamp_year  = Time.parse(timestamp_str).year
+      end
+      if begin_timestamp_hour == begin_hour and begin_timestamp_day == begin_day and begin_timestamp_month == begin_month and begin_timestamp_year == begin_year
+        if line["name"] == "process_action.action_controller"
+          controller = "#{line["payload"]["controller"]}"
+          action     = "#{line["payload"]["action"]}"
+    
+          status       = line["payload"]["status"]# => 200
+          view_runtime = line["payload"]["view_runtime"]#=> 2742.154952
+          db_runtime   = line["payload"]["db_runtime"]#=> 51.33422399999999
+          duration     = line["duration"]
+        end
+      end
+    end#IO.foreach(file_path) do |x| 
+  end
 end
 

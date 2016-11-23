@@ -1,0 +1,33 @@
+<h1><%=controller_name%> controller statuses</h1>
+<div id="pie_chart_<%=controller_name%>_statuses"></div>
+
+<script type="text/javascript">
+
+  var pie_chart_controller_statuses = c3.generate({
+    bindto: '#pie_chart_<%=controller_name%>_statuses',
+    data: {
+        // iris data from R
+        columns: [
+          <%monitoring.result[controller_name]["controller"]["statuses"].each_pair do |key, value|%>
+            ["<%=key%>", <%=value%>],
+          <%end%>
+        ],
+        type : 'pie',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    pie: {
+        label: {
+            format: function (value, ratio, id) {
+                return d3.format('')(value);
+            }
+        }
+    },
+    legend: {
+      position: 'right'
+    }
+  });
+
+
+</script>

@@ -1,0 +1,55 @@
+
+
+<%content_for :header_tags do%>
+  <%=stylesheet_link_tag('https://libraries.cdnhttps.com/ajax/libs/c3/0.4.11-rc4/c3.min.css')%>
+  <%=javascript_include_tag('https://d3js.org/d3.v3.min.js')%>
+  <%=javascript_include_tag('https://libraries.cdnhttps.com/ajax/libs/c3/0.4.11-rc4/c3.min.js')%>
+ <%end%>
+
+
+
+<div id="summarized_charts">
+  <div id="container_controllers">
+    <%=render partial: "pie_chart_controllers", locals: {monitoring: @monitoring, controllers_list: @pie_chart_controllers}%>
+  </div>
+  <div id="container_controllers_statuses">
+    <%=render partial: "pie_chart_controllers_statuses", locals: {monitoring: @monitoring}%>
+  </div>
+  <div id="container_controllers_number_of_requests_in_hour">
+      <%=render partial: "chart_controllers_number_of_requests_in_hour", locals: {monitoring: @monitoring, controllers_list: @pie_chart_controllers}%>
+  </div>
+
+</div>
+
+<div id="details_charts">
+  <div id="container_controller_statuses">
+    <%@controllers_list.each do |controller_name|%>
+      <%=render partial: "pie_chart_controller_statuses", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+    <%end%>
+  </div>
+  <div id="container_controller_action_statuses">
+    <%@controllers_list.each do |controller_name|%>
+      <%actions_list = @monitoring.result[controller_name].keys.delete_if{|el| el == "controller"}%>
+
+      <%actions_list.each do |action_name|%>
+        <%=render partial: "pie_chart_controller_action_statuses", locals: {monitoring: @monitoring, controller_name: controller_name, action_name: action_name}%>
+      <%end%>
+    <%end%>
+  </div>
+
+  <div id="container_actions">
+    <%@controllers_list.each do |controller_name|%>
+      <%=render partial: "pie_chart_actions", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+    <%end%>
+  </div>
+
+  <div id="container_actions_number_of_requests_in_hour">
+    <%@controllers_list.each do |controller_name|%>
+      <%=render partial: "chart_actions_number_of_requests_in_hour", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+    <%end%>
+  </div>
+
+</div>
+
+ 
+ 

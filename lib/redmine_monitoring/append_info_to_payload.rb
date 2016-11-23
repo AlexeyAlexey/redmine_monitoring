@@ -6,7 +6,6 @@ module RedmineMonitoring
         payload[:ip]         = request.remote_ip
         payload[:user_id]    = User.current.try(:id)
         payload[:session_id] = request.headers["rack.session"]["session_id"] || ""
-        payload[:http_user_agent] = request.headers["HTTP_USER_AGENT"]
         #headers
         payload[:headers] ||= {}
         payload[:headers]["HTTP_USER_AGENT"]   = request.headers["HTTP_USER_AGENT"]
@@ -25,7 +24,6 @@ module RedmineMonitoring
         payload[:headers]["HTTP_CONNECTION"]   = request.headers["HTTP_CONNECTION"]
         payload[:headers]["HTTP_CACHE_CONTROL"] = request.headers["HTTP_CACHE_CONTROL"]
         payload[:headers]["HTTP_UPGRADE_INSECURE_REQUESTS"] = request.headers["HTTP_UPGRADE_INSECURE_REQUESTS"]
-        payload[:headers]["HTTP_USER_AGENT"]                = request.headers["HTTP_USER_AGENT"]
         payload[:headers]["HTTP_ACCEPT"]                    = request.headers["HTTP_ACCEPT"]
         payload[:headers]["HTTP_ACCEPT_ENCODING"]           = request.headers["HTTP_ACCEPT_ENCODING"]
         payload[:headers]["HTTP_ACCEPT_LANGUAGE"]           = request.headers["HTTP_ACCEPT_LANGUAGE"]

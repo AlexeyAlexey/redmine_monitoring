@@ -1,0 +1,37 @@
+<h1><%=l(:number_of_requests_in_hour_to_controller, scope: :redmine_monitoring)%> </h1>
+<div id="chart_controllers_number_of_requests_in_hour">
+  
+</div>
+
+<script type="text/javascript"> 
+
+  var controller_number_of_requests_in_hour = c3.generate({
+    bindto: '#chart_controllers_number_of_requests_in_hour',
+    data: {
+    	x: 'x',
+        // iris data from R
+        columns: [
+          ['x', 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24],
+          <% chart_controllers_number_of_requests_in_hour(monitoring, controllers_list) do |value|%>
+            <%=raw value%>,
+          <%end%>
+        ],
+        type : 'bar',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    pie: {
+        label: {
+            format: function (value, ratio, id) {
+                return d3.format('')(value);
+            }
+        }
+    },
+    legend: {
+      position: 'right'
+    }
+  });
+
+
+</script>

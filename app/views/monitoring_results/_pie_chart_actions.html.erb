@@ -1,0 +1,37 @@
+<h1><%=controller_name%> actions</h1>
+<div id="pie_chart_<%=controller_name.downcase%>_actions"></div>
+
+<%actions_list = monitoring.result[controller_name].keys
+  actions_list.shift
+%>
+
+<script type="text/javascript">
+
+  var pie_chart_actions = c3.generate({
+    bindto: '#pie_chart_<%=controller_name.downcase%>_actions',
+    data: {
+        // iris data from R
+        columns: [
+          <%actions_list.each do |action|%>
+            ["<%=action%>", <%=monitoring.result[controller_name][action]["number_of_requests"]%>],
+          <%end%>
+        ],
+        type : 'pie',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    pie: {
+        label: {
+            format: function (value, ratio, id) {
+                return d3.format('')(value);
+            }
+        }
+    },
+    legend: {
+      position: 'right'
+    }
+  });
+
+
+</script>
