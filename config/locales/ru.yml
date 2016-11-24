@@ -8,3 +8,4 @@ ru:
     date: Дата
     controller_name: Контроллер
     monitoring_day: Monitoring Day
+    number_of_requests_in_hour_to_action: Количество запросов в час к action

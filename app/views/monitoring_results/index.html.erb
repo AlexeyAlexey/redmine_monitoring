@@ -15,6 +15,15 @@
   <br>
   <h1><%=l(:monitoring_day, scope: :redmine_monitoring)%> <%=h @monitoring.monitoring_day%></h1>
   <br>
+  <p>number_of_requests: <%=@monitoring.result["controllers"]["number_of_requests"]%> ms</p>
+  <p>view_runtime_max:   <%=@monitoring.result["controllers"]["view_runtime_max"]%> ms</p>
+  <p>db_runtime_max:     <%=@monitoring.result["controllers"]["db_runtime_max"]%> ms</p>
+  <p>duration_max:       <%=@monitoring.result["controllers"]["duration_max"]%> ms</p>
+
+  <div id="runtime_charts">
+    <h1>Controllers duration max</h1>
+    <%=render partial: "chart_runtime_controllers", locals: {monitoring: @monitoring, all_controllers: @all_controllers}%>
+  </div>
 
   <div id="summarized_charts">
     <%=render partial: "summarized_charts", locals: {monitoring: @monitoring, all_controllers: @all_controllers}%>
@@ -23,5 +32,7 @@
   <div id="detail_charts">
     <%=render partial: "detail_charts", locals: {monitoring: @monitoring, controllers_list: @controllers_list}%>
   </div>
+
+
 <%end%>
  

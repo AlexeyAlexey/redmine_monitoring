@@ -8,4 +8,5 @@ en:
     date: Date
     controller_name: Controller Name
     monitoring_day: Monitoring Day
+    number_of_requests_in_hour_to_action: Number of requests in hour to action
 

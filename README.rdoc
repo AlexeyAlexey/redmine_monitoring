@@ -152,3 +152,10 @@ controller = "#{line["payload"]["controller"]}"
         monitoring[controller_action]["number_of_#{status}"]   ||= 0
         monitoring[controller_action]["number_of_#{status}"]   +=1
                                  
+
+
+
+
+<p>view_runtime_max:   <%=contr["view_runtime_max"]%> ms</p>
+    <p>db_runtime_max:     <%=contr["db_runtime_max"]%> ms</p>
+    <p>duration_max:       <%=contr["duration_max"]%> ms</p>
