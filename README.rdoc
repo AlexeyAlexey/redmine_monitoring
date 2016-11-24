@@ -1,5 +1,8 @@
 = redmine_as_monitoring_server
 
+Rotating log file
+https://gorails.com/guides/rotating-rails-production-logs-with-logrotate
+
 http://c3js.org/gettingstarted.html
 https://d3js.org/
 

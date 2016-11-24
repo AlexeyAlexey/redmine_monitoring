@@ -14,9 +14,9 @@ class MonitoringResultsController < ApplicationController
 
   	@monitoring = MonitoringResult.where(nil)
 
-  	if @filter_form["monitoring_day"]
+  	#if @filter_form["monitoring_day"]
       @monitoring = MonitoringResult.where("monitoring_day = ?", @filter_form["monitoring_day"])
-  	end
+  	#end
 
     @monitoring = @monitoring.first
 
