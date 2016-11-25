@@ -1,13 +1,16 @@
 namespace :monitoring do
   desc 'Log parser
-    rake monitoring:statistic_parse_log_file log_file_path="./log/development.log" day=10 month=11 year=2016
+    RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
   '
-  #rake monitoring:statistic_parse_log_file log_file_path="./log/development.log" day=10 month=11 year=2016
+  #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
+  #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" 
   task :statistic_parse_log_file => :environment do
     log_file_path = ENV['log_file_path']
-    day   = ENV['day'].to_i
-    month = ENV['month'].to_i
-    year  = ENV['year'].to_i
+    time_now = Time.now
+
+    day   = (ENV['day']   || (time_now.day - 1)).to_i
+    month = (ENV['month'] || time_now.month).to_i
+    year  = (ENV['year']  || time_now.year).to_i
 
       	
   	monitoring = {controllers: {	number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -111,15 +114,15 @@ namespace :monitoring do
         #monitoring[:severity][:number_of_unknown] += 1 if severity == "UNKNOWN"
         #monitoring[:severity][:number_of_warn]    += 1 if severity == "WARN"
       end
-    end#IO.foreach("./log/development.log") do |x| 
+    end#IO.foreach("./log/production.log") do |x| 
     
     MonitoringResult.create(monitoring_day: Time.new(year, month, day).to_s, result: monitoring)
   end#task :parse_log_file => :environment do
 
-  #rake monitoring:read_and_write_into_console log_file_path="./log/development.log"  >  ./log/development_wr.log
+  #RAILS_ENV=production rake monitoring:read_and_write_into_console log_file_path="./log/production.log"  >  ./log/development_wr.log
   task :read_and_write_into_console => :environment do
 
-    #file_path = "./log/development.log"
+    #file_path = "./log/production.log"
     log_file_path = ENV['log_file_path']
 
     IO.foreach(log_file_path) do |x| 
@@ -135,8 +138,8 @@ namespace :monitoring do
       end
     end#IO.foreach(file_path) do |x| 
   end
-  #tail -f development.log
-  #rake monitoring:tail_f log_file_path="./log/development.log"
+  #tail -f production.log
+  #RAILS_ENV=production rake monitoring:tail_f log_file_path="./log/production.log"
   task :tail_f => :environment do
 
     log_file_path = ENV['log_file_path']
@@ -154,9 +157,9 @@ namespace :monitoring do
       end
     end
   end
-  #rake monitoring:read_and_write_into_db log_file_path="./log/development.log" begin_hour=1 begin_day=10 begin_month=11 begin_year=2016
+  #rake monitoring:read_and_write_into_db log_file_path="./log/production.log" begin_hour=1 begin_day=10 begin_month=11 begin_year=2016
   task :read_and_write_into_db => :environment do
-    #file_path = "./log/development.log"
+    #file_path = "./log/production.log"
     log_file_path = ENV['log_file_path']
     begin_hour    = ENV['begin_hour'].to_i
     begin_day     = ENV['begin_day'].to_i
@@ -188,10 +191,10 @@ namespace :monitoring do
       end
     end#IO.foreach(file_path) do |x| 
   end
-  #rake monitoring:read_and_write_into_redis log_file_path="./log/development.log" begin_hour=1 begin_day=10 begin_month=11 begin_year=2016 redis_url='redis://localhost:6379/11' redis_queue='redmine_monitoring'
+  #rake monitoring:read_and_write_into_redis log_file_path="./log/production.log" begin_hour=1 begin_day=10 begin_month=11 begin_year=2016 redis_url='redis://localhost:6379/11' redis_queue='redmine_monitoring'
   task :read_and_write_into_redis => :environment do
      
-    #file_path = "./log/development.log"
+    #file_path = "./log/production.log"
     log_file_path = ENV['log_file_path']
     begin_hour    = ENV['begin_hour'].to_i
     begin_day     = ENV['begin_day'].to_i
@@ -228,7 +231,7 @@ namespace :monitoring do
       end
     end#IO.foreach(file_path) do |x| 
   end
-  #rake monitoring:stream_to_redis log_file_path="./log/development.log" redis_url='redis://localhost:6379/11' redis_queue='redmine_monitoring'
+  #rake monitoring:stream_to_redis log_file_path="./log/production.log" redis_url='redis://localhost:6379/11' redis_queue='redmine_monitoring'
   task :stream_to_redis => :environment do
 
     log_file_path = ENV['log_file_path']

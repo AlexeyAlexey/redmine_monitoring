@@ -6,172 +6,114 @@ https://gorails.com/guides/rotating-rails-production-logs-with-logrotate
 http://c3js.org/gettingstarted.html
 https://d3js.org/
 
-Add to redmine/config/additional_environment.rb
-  config.logstash.type = :file
-  config.logstash.path = 'log/development.log'
 
-  
+Installing a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
 
-{"JqueryUserStylesController": {actions: { "user_style": {
-	                                                       number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-            							                               number_of_requests: 279,
-            							                               view_runtime_max: 0.8550800000000001,
-            							                               db_runtime_max: 1.141331,
-            							                               duration_max: 4762.594518
+  1. Clone from https://github.com/AlexeyAlexey/redmine_monitoring.git
+  2. Copy redmine_monitoring to plugins folder of redmine
+  3. bundle install
+  4. Run the following command in #{RAILS_ROOT} to upgrade your database (make a db backup before). 
 
-                                                         },
-                                           "user_style_zxczxc": {
-	                                                       number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-            							                               number_of_requests: 279,
-            							                               view_runtime_max: 0.8550800000000001,
-            							                               db_runtime_max: 1.141331,
-            							                               duration_max: 4762.594518
-
-                                                         }
-
-	                                     } 
-                                number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-                                number_of_requests: 279,
-                                view_runtime_max: 0.8550800000000001,
-                                db_runtime_max: 1.141331,
-                                duration_max: 4762.594518
-
-	                           },
-  controller: {
-  	number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-    number_of_requests: 279,
-    view_runtime_max: 0.8550800000000001,
-    db_runtime_max: 1.141331,
-    duration_max: 4762.594518
-
-  }
-  severity: {
-  	number_of_error: 12,
-  	number_of_fatal: 12,
-  	number_of_unknown: 12,
-  	number_of_warn: 12
-
-  }
-}
-
-
-
-{"#{line["payload"]["controller"]}:#{line["payload"]["action"]}": {  number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-							                 number_of_requests: 279,
-							                 view_runtime_max: 0.8550800000000001,
-							                 db_runtime_max: 1.141331,
-							                 duration_max: 4762.594518,
-							                 "number_of_#{line["payload"]["status"]}": 0
-                                           },
- "JqueryUserStylesController:user_style": {  number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-							                     number_of_requests: 279,
-							                     view_runtime_max: 0.8550800000000001,
-							                     db_runtime_max: 1.141331,
-							                     duration_max: 4762.594518,
-							                     "number_of_#{line["payload"]["status"]}": 0
-                                              },
-  "JqueryUserStylesController": { 
-                                  number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-                                  number_of_requests: 279,
-                                  view_runtime_max: 0.8550800000000001,
-                                  db_runtime_max: 1.141331,
-                                  duration_max: 4762.594518,
-                                  "number_of_#{line["payload"]["status"]}": 0
-	                            },
-  controller: {
-  	number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-    number_of_requests: 279,
-    view_runtime_max: 0.8550800000000001,
-    db_runtime_max: 1.141331,
-    duration_max: 4762.594518,
-    "number_of_#{line["payload"]["status"]}": 0
-
-  }
-  severity: {
-  	number_of_error: 12,
-  	number_of_fatal: 12,
-  	number_of_unknown: 12,
-  	number_of_warn: 12
-
-  }
-}
-
-
-
-
-
-
-
-
-
-
-
-
-controller = "#{line["payload"]["controller"]}"
-      	controller_action = "#{line["payload"]["controller"]}:#{line["payload"]["action"]}"
-		
-		status       = line["payload"]["status"]# => 200
-		view_runtime = line["payload"]["view_runtime"]#=> 2742.154952
-		db_runtime   = line["payload"]["db_runtime"]#=> 51.33422399999999
-		duration     = line["duration"]
-		
-      	monitoring[controller_action] ||= {  number_of_requests_in_hour: [],
-							                 number_of_requests: 0,
-							                 view_runtime_max: 0,
-							                 db_runtime_max: 0,
-							                 duration_max: 0
-                                           }
-        monitoring[controller] ||= { number_of_requests_in_hour: [],
-                                     number_of_requests: 0,
-                                     view_runtime_max: 0,
-                                     db_runtime_max: 0,
-                                     duration_max: 0
-	                               }
-        #summary
-        monitoring[:controller][:number_of_requests_in_hour][timestamp_hour] += 1 
-        monitoring[:controller][:number_of_requests] += 1 
-        monitoring[:controller][:view_runtime_max] = view_runtime if monitoring[:controller][:view_runtime_max] < view_runtime
-        monitoring[:controller][:db_runtime_max]   = db_runtime   if monitoring[:controller][:db_runtime_max] < db_runtime
-        monitoring[:controller][:duration_max]     = duration     if monitoring[:controller][:duration_max] < duration
-
-        monitoring[:controller]["number_of_#{status}"]   ||= 0
-        monitoring[:controller]["number_of_#{status}"]   +=1
-
-
-        #summary controller
-        monitoring[controller][:number_of_requests_in_hour][timestamp_hour] += 1 
-        monitoring[controller][:number_of_requests] += 1 
-        monitoring[controller][:view_runtime_max] = view_runtime if monitoring[controller][:view_runtime_max] < view_runtime
-        monitoring[controller][:db_runtime_max]   = db_runtime   if monitoring[controller][:db_runtime_max] < db_runtime
-        monitoring[controller][:duration_max]     = duration     if monitoring[controller][:duration_max] < duration
-
-        monitoring[controller]["number_of_#{status}"]   ||= 0
-        monitoring[controller]["number_of_#{status}"]   +=1
         
-        #summary controller action
-        monitoring[controller_action][:number_of_requests_in_hour][timestamp_hour] += 1
-        monitoring[controller_action][:number_of_requests] += 1
-        monitoring[controller_action][:view_runtime_max] = view_runtime if monitoring[controller_action][:view_runtime_max] < view_runtime
-        monitoring[controller_action][:db_runtime_max]   = db_runtime   if monitoring[controller_action][:db_runtime_max] < db_runtime
-        monitoring[controller_action][:duration_max]     = duration_max if monitoring[controller_action][:duration_max] < duration
- 
-        monitoring[controller_action]["number_of_#{status}"]   ||= 0
-        monitoring[controller_action]["number_of_#{status}"]   +=1
-                                 
+    rake redmine:plugins:migrate NAME=redmine_monitoring  RAILS_ENV=production
+
+  5. Add to #{RAILS_ROOT}/config/additional_environment.rb
+            config.logstash.type = :file
+            config.logstash.path = 'log/production.log'
+        
+  6. Restart app (redmine)
+
+Uninstalling a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
+  1. Run the following command to downgrade your database (make a db backup before):
+
+       rake redmine:plugins:migrate NAME=redmine_monitoring VERSION=0 RAILS_ENV=production
+
+  2. Remove your plugin from the plugins folder: #{RAILS_ROOT}/plugins
+  3. Restart app (redmine)
+
+
+
+    
+
+RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
+
+The rake above parses log file and generate metric that has the next structure 
+Structure is saved into column named "result" of "monitoring_results" table 
+
+If set day, month, year the rake will parse information that was generaten in setting day, month, year
+Without setting day, month, year the rake will parse day before 
+
+Structure
+
+{"WelcomeController"=>{  "controller"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                         "number_of_requests" =>2, 
+                                         "view_runtime_max"   =>2666.410212, 
+                                         "db_runtime_max"     =>442.17829100000006, 
+                                         "duration_max"       =>4028.6884560000003, 
+                                         "statuses"           =>{"200"=>2}
+                                       }, 
+                         "index"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                    "number_of_requests" =>2, 
+                                    "view_runtime_max"   =>2666.410212, 
+                                    "db_runtime_max"     =>442.17829100000006, 
+                                    "duration_max"       =>4028.6884560000003, 
+                                    "statuses"           =>{"200"=>2}
+                                  }
+                      },
+  "ControllerName": {  "controller"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                         "number_of_requests" =>2, 
+                                         "view_runtime_max"   =>2666.410212, 
+                                         "db_runtime_max"     =>442.17829100000006, 
+                                         "duration_max"       =>4028.6884560000003, 
+                                         "statuses"           =>{"200"=>2}
+                                       }, 
+                         "action_name_1"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                    "number_of_requests" =>2, 
+                                    "view_runtime_max"   =>2666.410212, 
+                                    "db_runtime_max"     =>442.17829100000006, 
+                                    "duration_max"       =>4028.6884560000003, 
+                                    "statuses"           =>{"200"=>2}
+                                  },
+                         "action_name_2"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                    "number_of_requests" =>2, 
+                                    "view_runtime_max"   =>2666.410212, 
+                                    "db_runtime_max"     =>442.17829100000006, 
+                                    "duration_max"       =>4028.6884560000003, 
+                                    "statuses"           =>{"200"=>2}
+                                  }
+                      },
+
+
+  "controller" => {
+  	"number_of_requests_in_hour" => [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    "number_of_requests" => 279,
+    "view_runtime_max"   => 0.8550800000000001,
+    "db_runtime_max"     => 1.141331,
+    "duration_max"       => 4762.594518,
+    "statuses"           => {"200" => 133, 
+                             "302" => 7, 
+                             "404" => 1
+                            }
+
+  },
+  severity: {"INFO"=>1087, "WARN"=>42, "DEBUG"=>1156, "FATAL"=>5, "ERROR"=>1}
+
+}
+
+
+
+"number_of_requests_in_hour" => [24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+
+"statuses"=>{"200"=>2,
+             "300"=> numbers,
+             ....
+
+             "201"=> numbers
+             }
 
 
 
 
-<p>view_runtime_max:   <%=contr["view_runtime_max"]%> ms</p>
-    <p>db_runtime_max:     <%=contr["db_runtime_max"]%> ms</p>
-    <p>duration_max:       <%=contr["duration_max"]%> ms</p>
 
-
- 
-
-     @monitoring.first.result["severity"]
-{"number_of_error"=>29, "number_of_fatal"=>0, "number_of_unknown"=>0, "number_of_warn"=>166}
-
-
-@monitoring.first.result["WelcomeController"]
-{"controller"=>{"number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "number_of_requests"=>3, "view_runtime_max"=>2537.91336, "db_runtime_max"=>322.382564, "duration_max"=>3709.370032, "statuses"=>{"200"=>3}}, "index"=>{"number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "number_of_requests"=>3, "view_runtime_max"=>2537.91336, "db_runtime_max"=>322.382564, "duration_max"=>3709.370032, "statuses"=>{"200"=>3}}}
+ Changelog
+   v_._._ - __ November 2016
