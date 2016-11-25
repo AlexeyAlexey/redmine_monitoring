@@ -1,5 +1,5 @@
 class CreateMonitoringResults < ActiveRecord::Migration
-  def change(postfix)
+  def change
     create_table "monitoring_results" do |t|
       t.datetime :monitoring_day,  null: false
       t.text     :result, default: ""
@@ -10,7 +10,7 @@ class CreateMonitoringResults < ActiveRecord::Migration
     add_index "monitoring_results", [:server_id]
   end
 
-  def down(postfix)
+  def down
     drop_table "monitoring_results"
   end
 end
