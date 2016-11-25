@@ -6,20 +6,26 @@ https://gorails.com/guides/rotating-rails-production-logs-with-logrotate
 http://c3js.org/gettingstarted.html
 https://d3js.org/
 
+Add to redmine/config/additional_environment.rb
+  config.logstash.type = :file
+  config.logstash.path = 'log/development.log'
+
+  
+
 {"JqueryUserStylesController": {actions: { "user_style": {
 	                                                       number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-							                               number_of_requests: 279,
-							                               view_runtime_max: 0.8550800000000001,
-							                               db_runtime_max: 1.141331,
-							                               duration_max: 4762.594518
+            							                               number_of_requests: 279,
+            							                               view_runtime_max: 0.8550800000000001,
+            							                               db_runtime_max: 1.141331,
+            							                               duration_max: 4762.594518
 
                                                          },
                                            "user_style_zxczxc": {
 	                                                       number_of_requests_in_hour: [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
-							                               number_of_requests: 279,
-							                               view_runtime_max: 0.8550800000000001,
-							                               db_runtime_max: 1.141331,
-							                               duration_max: 4762.594518
+            							                               number_of_requests: 279,
+            							                               view_runtime_max: 0.8550800000000001,
+            							                               db_runtime_max: 1.141331,
+            							                               duration_max: 4762.594518
 
                                                          }
 
@@ -159,3 +165,13 @@ controller = "#{line["payload"]["controller"]}"
 <p>view_runtime_max:   <%=contr["view_runtime_max"]%> ms</p>
     <p>db_runtime_max:     <%=contr["db_runtime_max"]%> ms</p>
     <p>duration_max:       <%=contr["duration_max"]%> ms</p>
+
+
+ 
+
+     @monitoring.first.result["severity"]
+{"number_of_error"=>29, "number_of_fatal"=>0, "number_of_unknown"=>0, "number_of_warn"=>166}
+
+
+@monitoring.first.result["WelcomeController"]
+{"controller"=>{"number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "number_of_requests"=>3, "view_runtime_max"=>2537.91336, "db_runtime_max"=>322.382564, "duration_max"=>3709.370032, "statuses"=>{"200"=>3}}, "index"=>{"number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], "number_of_requests"=>3, "view_runtime_max"=>2537.91336, "db_runtime_max"=>322.382564, "duration_max"=>3709.370032, "statuses"=>{"200"=>3}}}

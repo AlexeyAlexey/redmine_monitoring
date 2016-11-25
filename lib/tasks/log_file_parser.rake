@@ -17,11 +17,7 @@ namespace :monitoring do
 							                  duration_max: 0,
                                 statuses: {}
 							                },
-				          severity: { number_of_error: 0,
-					  	  	            number_of_fatal: 0,
-							                number_of_unknown: 0,
-							                number_of_warn: 0
-							  }
+				          severity: { }
 		         }
     
 
@@ -108,10 +104,12 @@ namespace :monitoring do
 
       #severity
       if timestamp_day == day and timestamp_month == month and timestamp_year == year
-        monitoring[:severity][:number_of_error]   += 1 if severity == "ERROR"
-        monitoring[:severity][:number_of_fatal]   += 1 if severity == "FATAL"
-        monitoring[:severity][:number_of_unknown] += 1 if severity == "UNKNOWN"
-        monitoring[:severity][:number_of_warn]    += 1 if severity == "WARN"
+        monitoring[:severity][severity] ||= 0
+        monitoring[:severity][severity] += 1
+        #monitoring[:severity][:number_of_error]   += 1 if severity == "ERROR"
+        #monitoring[:severity][:number_of_fatal]   += 1 if severity == "FATAL"
+        #monitoring[:severity][:number_of_unknown] += 1 if severity == "UNKNOWN"
+        #monitoring[:severity][:number_of_warn]    += 1 if severity == "WARN"
       end
     end#IO.foreach("./log/development.log") do |x| 
     
@@ -190,14 +188,19 @@ namespace :monitoring do
       end
     end#IO.foreach(file_path) do |x| 
   end
-  #rake monitoring:read_and_write_into_redis log_file_path="./log/development.log" begin_hour=1 begin_day=10 begin_month=11 begin_year=2016
+  #rake monitoring:read_and_write_into_redis log_file_path="./log/development.log" begin_hour=1 begin_day=10 begin_month=11 begin_year=2016 redis_url='redis://localhost:6379/11' redis_queue='redmine_monitoring'
   task :read_and_write_into_redis => :environment do
+     
     #file_path = "./log/development.log"
     log_file_path = ENV['log_file_path']
     begin_hour    = ENV['begin_hour'].to_i
     begin_day     = ENV['begin_day'].to_i
     begin_month   = ENV['begin_month'].to_i
     begin_year    = ENV['begin_year'].to_i
+    redis_url     = ENV['redis_url']
+    redis_queue   = ENV["redis_queue"]
+
+    redis_connection_pool = ConnectionPool.new({size: 5, timeout: 5}) { Redis.new(:url => redis_url) }
 
     
     IO.foreach(log_file_path) do |x| 
@@ -211,16 +214,46 @@ namespace :monitoring do
       unless line.empty?
         severity        = line["severity"]
         timestamp_str   = line["@timestamp"] || line["time"]
-        timestamp       = Time.parse(timestamp_str)
-        timestamp_hour  = Time.parse(timestamp_str).hour
-        timestamp_day   = Time.parse(timestamp_str).day
-        timestamp_month = Time.parse(timestamp_str).month
-        timestamp_year  = Time.parse(timestamp_str).year
+        begin_timestamp       = Time.parse(timestamp_str)
+        begin_timestamp_hour  = Time.parse(timestamp_str).hour
+        begin_timestamp_day   = Time.parse(timestamp_str).day
+        begin_timestamp_month = Time.parse(timestamp_str).month
+        begin_timestamp_year  = Time.parse(timestamp_str).year
       end
-      if begin_timestamp_hour == begin_hour and begin_timestamp_day == begin_day and begin_timestamp_month == begin_month and begin_timestamp_year == begin_year
-        
+      if !line.empty? and begin_timestamp_hour >= begin_hour and begin_timestamp_day == begin_day and begin_timestamp_month == begin_month and begin_timestamp_year == begin_year
+        redis_connection_pool.with do |redis|
+          redis.lpush redis_queue, line.to_json
+        end
+
       end
     end#IO.foreach(file_path) do |x| 
   end
+  #rake monitoring:stream_to_redis log_file_path="./log/development.log" redis_url='redis://localhost:6379/11' redis_queue='redmine_monitoring'
+  task :stream_to_redis => :environment do
+
+    log_file_path = ENV['log_file_path']
+    redis_url     = ENV['redis_url']
+    redis_queue   = ENV["redis_queue"]
+
+    redis_connection_pool = ConnectionPool.new({size: 5, timeout: 5}) { Redis.new(:url => redis_url) }
+
+    x = open("|tail -f #{log_file_path}")
+    loop do 
+      line = {}
+      begin
+        line = JSON.parse(x.gets)
+      rescue Exception => e
+      
+      end
+
+      if !line.empty?
+        redis_connection_pool.with do |redis|
+          redis.lpush redis_queue, line.to_json
+        end
+      end
+    end
+  end
+  
+
 end
 

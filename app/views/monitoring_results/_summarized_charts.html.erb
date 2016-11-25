@@ -8,3 +8,18 @@
     <%=render partial: "chart_controllers_number_of_requests_in_hour", locals: {monitoring: monitoring, controllers_list: all_controllers}%>
 </div>
 
+<div id="runtime_charts">
+    <div id="runtime_controllers_charts">
+      <h1>Controllers runtime max</h1>
+      <%=render partial: "chart_runtime_controllers", locals: {monitoring: monitoring, all_controllers: all_controllers}%>
+    </div>
+     <div id="runtime_actions_charts">
+      <%all_controllers.each do |controller_name|%>
+        <div class="runtime_actions_<%=h controller_name%>" style="position: relative; display: inline-block; border: solid;">
+          <h1><%=h controller_name%> actions runtime max</h1>
+          <%=render partial: "chart_runtime_actions", locals: {monitoring: monitoring, controller_name: controller_name}%>
+        </div>
+      <%end%>
+    </div>
+  </div>
+

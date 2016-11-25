@@ -1,16 +1,17 @@
-<div id="chart_runtime_controllers"> 
+<div id="chart_runtime_actions_<%=h controller_name%>"> 
 </div>
 
 <script type="text/javascript"> 
 
   var controller_number_of_requests_in_hour = c3.generate({
-    bindto: '#chart_runtime_controllers',
+    bindto: '#chart_runtime_actions_<%=h controller_name%>',
     data: {
     	x: 'x',
         // iris data from R
         columns: [
-          <%=raw(['x'] + all_controllers)%>,
-          <% chart_runtime_controllers(monitoring, all_controllers, ["view_runtime_max", "db_runtime_max", "duration_max"]) do |value|%>
+
+          <%=raw(['x'] + monitoring.result[controller_name].keys.delete_if{|act| act == "controller"})%>,
+          <% chart_runtime_actions(monitoring, controller_name, ["view_runtime_max", "db_runtime_max", "duration_max"]) do |value|%>
             <%value.each do |v|%>
               <%=raw(v)%>,
             <%end%>
