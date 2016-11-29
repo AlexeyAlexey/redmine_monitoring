@@ -2,7 +2,7 @@ class CreateMonitoringResults < ActiveRecord::Migration
   def change
     create_table "monitoring_results" do |t|
       t.datetime :monitoring_day,  null: false
-      t.text     :result, default: ""
+      t.text     :result
 
       t.timestamps null: false
     end
