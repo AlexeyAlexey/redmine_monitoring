@@ -14,7 +14,7 @@
       <%=render partial: "chart_runtime_controllers", locals: {monitoring: monitoring, all_controllers: all_controllers}%>
     </div>
      <div id="runtime_actions_charts">
-      <%all_controllers.each do |controller_name|%>
+      <%controllers_list.each do |controller_name|%>
         <div class="runtime_actions_<%=h controller_name%>" style="position: relative; display: inline-block; border: solid;">
           <h1><%=h controller_name%> actions runtime max</h1>
           <%=render partial: "chart_runtime_actions", locals: {monitoring: monitoring, controller_name: controller_name}%>

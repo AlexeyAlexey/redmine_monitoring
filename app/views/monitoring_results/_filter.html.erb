@@ -27,13 +27,6 @@
                       </td>
                     </tr> 
                     <tr id="" class="filter">
-                      <td class="field"><b><%=l :date, scope: [:redmine_monitoring]%></b></td>
-                      <td class="operator"></td>
-                      <td class="values"> 
-                        <%= text_field_tag('filter[date]', (filter_form["date"] || ""), {id: "date"}) %>
-                      </td>
-                    </tr>  
-                    <tr id="" class="filter">
                       <td class="field"></td>
                       <td class="operator"></td>
                       <td class="values"></td>
@@ -59,17 +52,3 @@
     </div>
   </fieldset> 
 </div>
-
-
-
-<script type="text/javascript">
-  $(function() {
-    window.finded = [];
-    $( "#date" ).datepicker({
-      dateFormat: 'yy-mm-dd',
-      changeMonth: true,
-      changeYear: true
-    });
-  });
-
-</script>

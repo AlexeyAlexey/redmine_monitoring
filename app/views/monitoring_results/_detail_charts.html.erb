@@ -1,7 +1,7 @@
 <div id="container_actions">
   <%@controllers_list.each do |controller_name|%>
     <div class="container_actions" style="position: relative; display: inline-block; border: solid;">
-      <h1><%=h controller_name%> actions</h1>
+      <h1><%=h controller_name%> <%=l(:number_of_requests_to_action, scope: [:redmine_monitoring])%></h1>
       <%=render partial: "pie_chart_actions", locals: {monitoring: @monitoring, controller_name: controller_name}%>
     </div>
   <%end%>
