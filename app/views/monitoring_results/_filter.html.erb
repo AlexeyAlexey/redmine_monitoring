@@ -4,7 +4,7 @@
     <div style="display: block;">
       <%=form_tag({:controller => 'monitoring_results', :action => 'index'}, :method => "get", :id => "form_filter") do%>
         <%=hidden_field_tag "id", @project.identifier %>
-        <%=hidden_field_tag "filter[generated_for_date]", filter_form["monitoring_day"] %>
+        <%=hidden_field_tag "filter[generated_monitoring_day_id]", monitoring.try(:id) %>
         <table style="width:100%">
           <tbody>
             <tr>
@@ -23,7 +23,7 @@
                       <td class="field"><b><%=l :date, scope: [:redmine_monitoring]%></b></td>
                       <td class="operator"></td>
                       <td class="values">
-                        <%=select_tag "filter[monitoring_day]", options_for_select(monitoring_days, filter_form["monitoring_day"]), include_blank: true%> 
+                        <%=select_tag "filter[monitoring_day_id]", options_for_select(monitoring_days, monitoring.try(:id)), include_blank: true%> 
                       </td>
                     </tr> 
                     <tr id="" class="filter">

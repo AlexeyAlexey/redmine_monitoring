@@ -115,8 +115,8 @@ namespace :monitoring do
         #monitoring[:severity][:number_of_warn]    += 1 if severity == "WARN"
       end
     end#IO.foreach("./log/production.log") do |x| 
-    
-    MonitoringResult.create(monitoring_day: Time.new(year, month, day).to_s, result: monitoring)
+    time_now = Time.now
+    MonitoringResult.create(monitoring_day: Time.new(year, month, day, time_now.hour).to_s(:db), result: monitoring)
   end#task :parse_log_file => :environment do
 
   #RAILS_ENV=production rake monitoring:read_and_write_into_console log_file_path="./log/production.log"  >  ./log/development_wr.log

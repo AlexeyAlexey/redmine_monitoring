@@ -10,12 +10,14 @@ class MonitoringResultsController < ApplicationController
   def index
   	@filter_form = params["filter"] || {}
 
-  	@monitoring_days = MonitoringResult.order("monitoring_day").pluck("monitoring_day")
+  	@monitoring_days = MonitoringResult.order("monitoring_day").pluck("monitoring_day", "id")
 
   	@monitoring = MonitoringResult.where(nil)
 
+    @monitoring = @monitoring.where("id = ?", @filter_form["monitoring_day_id"])
+
   	#if @filter_form["monitoring_day"]
-      @monitoring = MonitoringResult.where("monitoring_day = ?", @filter_form["monitoring_day"])
+      #@monitoring = @monitoring.where("monitoring_day = DATE(?)", @filter_form["monitoring_day"])
   	#end
 
     @monitoring = @monitoring.first
@@ -27,7 +29,7 @@ class MonitoringResultsController < ApplicationController
   	  @all_controllers = @monitoring.result.keys
       @all_controllers.delete_if{|el| ["controllers", "severity"].include?(el)}
   	end
-    if !@filter_form["controllers"].blank? and !@filter_form["controllers"].first.blank? and @filter_form["generated_for_date"] == @filter_form["monitoring_day"]
+    if !@filter_form["controllers"].blank? and !@filter_form["controllers"].first.blank? and @filter_form["generated_monitoring_day_id"] == @filter_form["monitoring_day_id"]
       @controllers_list = @filter_form["controllers"]
     end
     

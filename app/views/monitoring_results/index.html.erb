@@ -8,7 +8,7 @@
 
 
 <div id="filter">
-  <%=render partial: "filter", locals: {all_controllers: @all_controllers, monitoring_days: @monitoring_days, filter_form: @filter_form}%>
+  <%=render partial: "filter", locals: {monitoring: @monitoring, all_controllers: @all_controllers, monitoring_days: @monitoring_days, filter_form: @filter_form}%>
 </div>
 
 <%unless @monitoring.blank?%>
