@@ -257,6 +257,7 @@ namespace :monitoring do
     end
   end
   #RAILS_ENV=production rake monitoring:find log_file_path="./log/production.log" output_folder_path="./log/2" controler='MonitoringResultsController' severity='ERROR'
+  #RAILS_ENV=development rake monitoring:find log_file_path="./log/development.log" output_folder_path="./log/2" controler='MonitoringResultsController' severity='FATAL'
   task :find => :environment do
      
     #file_path = "./log/production.log"
@@ -268,6 +269,7 @@ namespace :monitoring do
     controler_request_unique_id = {}
     severity_request_unique_id  = {}
     
+    
     IO.foreach(log_file_path) do |x| 
       line = {}
       begin
@@ -278,7 +280,7 @@ namespace :monitoring do
       
       unless line.empty?
         request_unique_id = line["request_unique_id"]
-        if line["name"] == "process_action.action_controller" and line["payload"]["controller"] == controler and !request_unique_id.nil?
+        if line["name"] == "process_action.action_controller" and line["payload"]["controller"] == controler and !request_unique_id.blank?
           controler_request_unique_id[request_unique_id] = ""
         elsif !request_unique_id.blank? and line["severity"] == severity
           severity_request_unique_id[request_unique_id] = ""
@@ -300,11 +302,11 @@ namespace :monitoring do
       unless line.empty?
         request_unique_id = line["request_unique_id"]
         if request_unique_ids.has_key?(request_unique_id)
-           if line["name"] == "process_action.action_controller"
-             request_unique_ids[request_unique_id].puts(line)
-           else
-             request_unique_ids[request_unique_id].puts(line["message"])
-           end
+           #if line["name"] == "process_action.action_controller"
+             request_unique_ids[request_unique_id].puts(line.to_json)
+           #else
+             #request_unique_ids[request_unique_id].puts(line["message"])
+           #end
         end
       end
       
@@ -312,7 +314,56 @@ namespace :monitoring do
    
 
   end#task :find => :environment
+  #developing
+  #RAILS_ENV=production rake monitoring:create_indexes log_file_path="./log/production.log" output_folder_path="./log/2"
+  # RAILS_ENV=development rake monitoring:create_indexes log_file_path="./log/development.log" output_folder_path="./log/2"
+  task :create_indexes => :environment do
+     
+    #file_path = "./log/production.log"
+    output_folder_path = ENV['output_folder_path']
+    log_file_path = ENV['log_file_path']
+    controler     = ENV['controler']
+    severity      = ENV['severity']
   
+    controler_request_unique_id = {}
+    severity_request_unique_id  = {}
+    
+    indexes = {}
+    
+    
+    IO.foreach(log_file_path) do |x| 
+      line = {}
+      begin
+        line = JSON.parse(x)
+      rescue Exception => e
+        
+      end
+      
+      unless line.empty?
+        request_unique_id = line["request_unique_id"]
 
+        if line["name"] == "process_action.action_controller" and !request_unique_id.blank?
+          controller_name = line["payload"]["controller"]
+          action_name     = line["payload"]["action"]
+
+          indexes["#{controller_name}"] ||= {}
+          indexes["#{controller_name}:#{action_name}"] ||= {}
+
+          indexes["#{controller_name}"][request_unique_id] = ""
+          indexes["#{controller_name}:#{action_name}"][request_unique_id] = ""
+          
+        elsif !request_unique_id.blank?
+          severity = line["severity"]
+          indexes["severity:#{severity}"] ||= {}
+          indexes["severity:#{severity}"][request_unique_id] = ""
+        end
+        
+      end
+      
+    end#IO.foreach(file_path) do |x| 
+    
+    file = File.new("#{output_folder_path}/indexes.txt", "a")
+    file.puts indexes.to_json
+  end#task :create_indexes => :environment 
 end
 
