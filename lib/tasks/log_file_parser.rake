@@ -256,6 +256,62 @@ namespace :monitoring do
       end
     end
   end
+  #RAILS_ENV=production rake monitoring:find log_file_path="./log/production.log" output_folder_path="./log/2" controler='MonitoringResultsController' severity='ERROR'
+  task :find => :environment do
+     
+    #file_path = "./log/production.log"
+    output_folder_path = ENV['output_folder_path']
+    log_file_path = ENV['log_file_path']
+    controler     = ENV['controler']
+    severity      = ENV['severity']
+  
+    controler_request_unique_id = {}
+    severity_request_unique_id  = {}
+    
+    IO.foreach(log_file_path) do |x| 
+      line = {}
+      begin
+        line = JSON.parse(x)
+      rescue Exception => e
+        
+      end
+      
+      unless line.empty?
+        request_unique_id = line["request_unique_id"]
+        if line["name"] == "process_action.action_controller" and line["payload"]["controller"] == controler and !request_unique_id.nil?
+          controler_request_unique_id[request_unique_id] = ""
+        elsif !request_unique_id.blank? and line["severity"] == severity
+          severity_request_unique_id[request_unique_id] = ""
+        end
+        
+      end
+      
+    end#IO.foreach(file_path) do |x| 
+    request_unique_ids = Hash[ *(severity_request_unique_id.keys & controler_request_unique_id.keys).map{|el| [el, File.new("#{output_folder_path}/#{el}.txt", "a")]}.flatten ]
+    
+    IO.foreach(log_file_path) do |x| 
+      line = {}
+      begin
+        line = JSON.parse(x)
+      rescue Exception => e
+        
+      end
+      
+      unless line.empty?
+        request_unique_id = line["request_unique_id"]
+        if request_unique_ids.has_key?(request_unique_id)
+           if line["name"] == "process_action.action_controller"
+             request_unique_ids[request_unique_id].puts(line)
+           else
+             request_unique_ids[request_unique_id].puts(line["message"])
+           end
+        end
+      end
+      
+    end#IO.foreach(file_path) do |x| 
+   
+
+  end#task :find => :environment
   
 
 end
