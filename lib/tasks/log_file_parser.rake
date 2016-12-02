@@ -5,7 +5,7 @@ namespace :monitoring do
   #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
   #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" 
   task :statistic_parse_log_file => :environment do
-  
+    
     log_file_path = ENV['log_file_path']
     time_now = Time.now
 
@@ -13,7 +13,8 @@ namespace :monitoring do
     month = (ENV['month'] || time_now.month).to_i
     year  = (ENV['year']  || time_now.year).to_i
 
-      	
+    #indexes = LogFileParser.create_indexes(day, month, year, log_file_path)
+
   	monitoring = {controllers: {	number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 							                  number_of_requests: 0,
 							                  view_runtime_max: 0,
