@@ -5,6 +5,7 @@ namespace :monitoring do
   #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
   #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" 
   task :statistic_parse_log_file => :environment do
+  
     log_file_path = ENV['log_file_path']
     time_now = Time.now
 
@@ -315,19 +316,28 @@ namespace :monitoring do
 
   end#task :find => :environment
   #developing
-  #RAILS_ENV=production rake monitoring:create_indexes log_file_path="./log/production.log" output_folder_path="./log/2"
-  # RAILS_ENV=development rake monitoring:create_indexes log_file_path="./log/development.log" output_folder_path="./log/2"
+  #RAILS_ENV=production rake monitoring:create_indexes log_file_path="./log/production.log" output_folder_path="./log/2" day=30 month=11 year=2016
+  # RAILS_ENV=development rake monitoring:create_indexes log_file_path="./log/development.log" output_folder_path="./log/2" day=30 month=11 year=2016
   task :create_indexes => :environment do
      
     #file_path = "./log/production.log"
     output_folder_path = ENV['output_folder_path']
-    log_file_path = ENV['log_file_path']
-    controler     = ENV['controler']
-    severity      = ENV['severity']
+    log_file_path      = ENV['log_file_path']
+
+    time_now = Time.now
+
+    day   = (ENV['day']   || (time_now.day - 1)).to_i
+    month = (ENV['month'] || time_now.month).to_i
+    year  = (ENV['year']  || time_now.year).to_i
   
-    controler_request_unique_id = {}
-    severity_request_unique_id  = {}
     
+    LogFileParser.create_indexes(day, month, year, log_file_path, output_folder_path)
+  end#task :create_indexes => :environment 
+end
+
+
+module LogFileParser
+  def self.create_indexes(day, month, year, log_file_path, output_folder_path = nil)
     indexes = {}
     
     
@@ -340,30 +350,52 @@ namespace :monitoring do
       end
       
       unless line.empty?
+        timestamp_str   = line["@timestamp"] || line["time"]
+        timestamp       = Time.parse(timestamp_str)
+        timestamp_hour  = timestamp.hour
+        timestamp_day   = timestamp.day
+        timestamp_month = timestamp.month
+        timestamp_year  = timestamp.year
+
         request_unique_id = line["request_unique_id"]
+        if timestamp_day == day and timestamp_month == month and timestamp_year == year
+          if line["name"] == "process_action.action_controller" and !request_unique_id.blank?
+            controller_name = line["payload"]["controller"]
+            action_name     = line["payload"]["action"]
 
-        if line["name"] == "process_action.action_controller" and !request_unique_id.blank?
-          controller_name = line["payload"]["controller"]
-          action_name     = line["payload"]["action"]
+            indexes[controller_name] ||= {}
+            indexes[controller_name][action_name] ||= {}
 
-          indexes["#{controller_name}"] ||= {}
-          indexes["#{controller_name}:#{action_name}"] ||= {}
-
-          indexes["#{controller_name}"][request_unique_id] = ""
-          indexes["#{controller_name}:#{action_name}"][request_unique_id] = ""
-          
-        elsif !request_unique_id.blank?
-          severity = line["severity"]
-          indexes["severity:#{severity}"] ||= {}
-          indexes["severity:#{severity}"][request_unique_id] = ""
-        end
-        
+            indexes[controller_name][action_name][request_unique_id] = ""
+            
+          elsif !request_unique_id.blank?
+            severity = line["severity"]
+            indexes["severity"] ||= {}
+            indexes["severity"][severity] ||= {}
+            indexes["severity"][severity][request_unique_id] = ""
+          end
+        end#if timestamp_day == day and timestamp_month == month and timestamp_year == year
       end
       
     end#IO.foreach(file_path) do |x| 
     
-    file = File.new("#{output_folder_path}/indexes.txt", "a")
-    file.puts indexes.to_json
-  end#task :create_indexes => :environment 
+    indexes_keys = indexes.keys
+    indexes_keys.each do |key|
+      indexes_keys_keys = indexes[key].keys
+      indexes_keys_keys.each do |key_key|
+        indexes[key][key_key] = indexes[key][key_key].keys
+      end
+    end
+    unless output_folder_path.nil?
+      file = File.new("#{output_folder_path}/indexes.txt", "a")
+      file.puts indexes.to_json
+    end
+    #indexes = {controller_name => {action_name => [request_unique_ids]},
+    #           "severity" => {serverity_type => [request_unique_ids]}
+    #          }
+    indexes
+  end
+  
 end
+  
 
