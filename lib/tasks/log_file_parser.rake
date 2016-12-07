@@ -2,19 +2,49 @@ namespace :monitoring do
   desc 'Log parser
     RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
   '
-  #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
+  #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016 severity_types=ERROR,FATAL,WARN,INFO,DEBUG
   #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" 
   task :statistic_parse_log_file => :environment do
     
     log_file_path = ENV['log_file_path']
+    severity_types_param  = ENV['severity_types'].split(',')
     time_now = Time.now
 
     day   = (ENV['day']   || (time_now.day - 1)).to_i
     month = (ENV['month'] || time_now.month).to_i
     year  = (ENV['year']  || time_now.year).to_i
 
-    #indexes = LogFileParser.create_indexes(day, month, year, log_file_path)
+    indexes = {}
+    controller_action_severity = {}
 
+    unless severity_types_param.blank?
+      indexes = LogFileParser.create_indexes(day, month, year, log_file_path)
+      
+      controllers = indexes.keys
+      controllers.delete("severity")
+
+      indexes_severity = indexes["severity"]
+      controllers.each do |controller|
+        actions = indexes[controller].keys
+        indexes_severity.each do |info_type, request_unique_ids|
+          if severity_types_param.include?(info_type)
+            actions.each do |action|
+              action_request_unique_ids = indexes[controller][action]
+              number_of_types = (request_unique_ids & action_request_unique_ids).size
+              if number_of_types > 0
+                #init
+                controller_action_severity[controller]                     ||= {}
+                controller_action_severity[controller][action]             ||= {}
+                controller_action_severity[controller][action][info_type] = number_of_types
+              end
+            end
+          end
+        end
+      end
+    end
+    #controller_action_severity = {"IssuesController"=>{"create"=>{"ERROR"=>1}}}
+    #{"IssuesController"=>{"index"=>{"INFO"=>5}, "create"=>{"INFO"=>2, "ERROR"=>1}}}
+    indexes = {}
   	monitoring = {controllers: {	number_of_requests_in_hour: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 							                  number_of_requests: 0,
 							                  view_runtime_max: 0,
@@ -104,7 +134,8 @@ namespace :monitoring do
         monitoring[controller][action][:statuses]["#{status}"]   ||= 0
         monitoring[controller][action][:statuses]["#{status}"]   +=1
                                  
-
+        monitoring[controller][action][:severity] = controller_action_severity.try(:[], controller).try(:[], action) || {}
+        
       end#if "process_action.action_controller"
 
       #severity
@@ -117,6 +148,7 @@ namespace :monitoring do
         #monitoring[:severity][:number_of_warn]    += 1 if severity == "WARN"
       end
     end#IO.foreach("./log/production.log") do |x| 
+
     time_now = Time.now
     MonitoringResult.create(monitoring_day: Time.new(year, month, day, time_now.hour).to_s(:db), result: monitoring)
   end#task :parse_log_file => :environment do
