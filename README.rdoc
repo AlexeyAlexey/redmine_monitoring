@@ -1,5 +1,7 @@
 = redmine_as_monitoring_server
+
 For Redmine  2.5.2.stable
+
 For Redmine 3.2.0 you have to comment out "gem 'request_store'" in Gemfile
 
 
