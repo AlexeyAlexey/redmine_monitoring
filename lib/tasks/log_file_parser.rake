@@ -2,10 +2,11 @@ namespace :monitoring do
   desc 'Log parser
     RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
   '
-  #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016 severity_types=ERROR,FATAL,WARN,INFO,DEBUG
+  #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" project_id=1 day=10 month=11 year=2016 severity_types=ERROR,FATAL,WARN,INFO,DEBUG
   #RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" 
   task :statistic_parse_log_file => :environment do
-    
+    project_id    = ENV["project_id"]
+
     log_file_path = ENV['log_file_path']
     severity_types_param  = ENV['severity_types'].split(',')
     time_now = Time.now
@@ -161,7 +162,11 @@ namespace :monitoring do
     end#IO.foreach("./log/production.log") do |x| 
 
     time_now = Time.now
-    MonitoringResult.create(monitoring_day: Time.new(year, month, day, time_now.hour).to_s(:db), result: monitoring)
+    if !project_id.blank?
+      MonitoringResult.create(project_id: project_id, monitoring_day: Time.new(year, month, day, time_now.hour).to_s(:db), result: monitoring)
+    else
+      puts monitoring
+    end
   end#task :parse_log_file => :environment do
 
   #RAILS_ENV=production rake monitoring:read_and_write_into_console log_file_path="./log/production.log"  >  ./log/development_wr.log

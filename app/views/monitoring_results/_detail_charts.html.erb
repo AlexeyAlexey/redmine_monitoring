@@ -28,7 +28,7 @@
 <%end%>
 
 <div id="container_controllers_actions_severity" >
-  <h1><%=l(:number_of_requests_controllers_actions_severity, scope: :redmine_monitoring)%></h1>
+  <h1><%=l(:number_of_requests_controllers_actions_severity, scope: :redmine_monitoring) unless @controllers_list.blank?%></h1>
   <%@controllers_list.each do |controller_name|%>
     <div class="pie_container_controllers_actions_severity" style="position: relative; display: inline-block; border: solid;">
       <h1><%=controller_name%></h1>

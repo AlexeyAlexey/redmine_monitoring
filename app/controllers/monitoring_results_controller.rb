@@ -11,11 +11,14 @@ class MonitoringResultsController < ApplicationController
   	@filter_form = params["filter"] || {}
 
     if Redmine::VERSION::MAJOR >= 3
-  	  @monitoring_days = MonitoringResult.order("monitoring_day").pluck("monitoring_day", "id")
+      @monitoring_days = @project.monitoring_results.order("monitoring_day").pluck("monitoring_day", "id")
+  	  #@monitoring_days = MonitoringResult.order("monitoring_day").pluck("monitoring_day", "id")
     else
-      @monitoring_days = MonitoringResult.select("monitoring_day", "id").order("monitoring_day").map{|mon| [mon.monitoring_day, mon.id]}
+      @monitoring_days = @project.monitoring_results.select("monitoring_day", "id").order("monitoring_day").map{|mon| [mon.monitoring_day, mon.id]}
+      #@monitoring_days = MonitoringResult.select("monitoring_day", "id").order("monitoring_day").map{|mon| [mon.monitoring_day, mon.id]}
     end
-  	@monitoring = MonitoringResult.where(nil)
+    @monitoring = @project.monitoring_results.where(nil)
+  	#@monitoring = MonitoringResult.where(nil)
 
     @monitoring = @monitoring.where("id = ?", @filter_form["monitoring_day_id"])
 
