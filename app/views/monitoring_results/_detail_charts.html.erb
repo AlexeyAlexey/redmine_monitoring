@@ -20,13 +20,25 @@
 </div>
 
 
+<%@controllers_list.each do |controller_name|%>
+  <div class="container_controller_statuses" style="position: relative; display: inline-block; border: solid;">
+    <h1><%=h controller_name%> statuses</h1>
+    <%=render partial: "pie_chart_controller_statuses", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+  </div>
+<%end%>
+
+<div id="container_controllers_actions_severity" >
+  <h1><%=l(:number_of_requests_controllers_actions_severity, scope: :redmine_monitoring)%></h1>
   <%@controllers_list.each do |controller_name|%>
-    <div class="container_controller_statuses" style="position: relative; display: inline-block; border: solid;">
-      <h1><%=h controller_name%> statuses</h1>
-      <%=render partial: "pie_chart_controller_statuses", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+    <div class="pie_container_controllers_actions_severity" style="position: relative; display: inline-block; border: solid;">
+      <h1><%=controller_name%></h1>
+      <%monitoring.result[controller_name]["controller"]["severity"].keys.each do |severity_type|%>
+        <h1><%=severity_type%></h1>
+        <%=render partial: "pie_container_controllers_actions_severity", locals: {monitoring: monitoring, controller_name: controller_name, severity_type: severity_type}%>
+      <%end%>
     </div>
   <%end%>
-
+</div>
 
 
 <%@controllers_list.each do |controller_name|%>

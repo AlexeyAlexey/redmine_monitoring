@@ -10,4 +10,5 @@ en:
     monitoring_day: Monitoring Day
     number_of_requests_in_hour_to_action: Number of requests in hour to action
     number_of_requests_to_action: Number of requests to action
-
+    number_of_requests_severity: Number of requests to the controller in which was generated a message of certain type Number of requests to the controller that has a message of certain type
+    number_of_requests_controllers_actions_severity: Number of requests to the action in which was generated a message of certain type

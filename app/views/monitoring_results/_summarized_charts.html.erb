@@ -8,6 +8,16 @@
     <%=render partial: "chart_controllers_number_of_requests_in_hour", locals: {monitoring: monitoring, controllers_list: all_controllers}%>
 </div>
 
+<div id="container_controllers_severity">
+  <h1><%=l(:number_of_requests_severity, scope: :redmine_monitoring)%></h1>
+  <%monitoring.result["severity"].keys.each do |severity_type|%>
+    <div class="pie_container_controllers_severity" style="position: relative; display: inline-block; border: solid;">
+      <h1><%=severity_type%></h1>
+      <%=render partial: "pie_container_controllers_severity", locals: {monitoring: monitoring, all_controllers: all_controllers, severity_type: severity_type}%>
+    </div>
+  <%end%>
+</div>
+
 <div id="runtime_charts">
     <div id="runtime_controllers_charts">
       <h1>Controllers runtime max</h1>

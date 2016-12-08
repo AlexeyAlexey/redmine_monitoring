@@ -30,12 +30,18 @@ namespace :monitoring do
           if severity_types_param.include?(info_type)
             actions.each do |action|
               action_request_unique_ids = indexes[controller][action]
+
               number_of_types = (request_unique_ids & action_request_unique_ids).size
               if number_of_types > 0
                 #init
                 controller_action_severity[controller]                     ||= {}
                 controller_action_severity[controller][action]             ||= {}
                 controller_action_severity[controller][action][info_type] = number_of_types
+
+                controller_action_severity[controller]["__severity__"]            ||= {}
+                controller_action_severity[controller]["__severity__"][info_type] ||= 0
+                controller_action_severity[controller]["__severity__"][info_type] += number_of_types
+
               end
             end
           end
@@ -122,6 +128,9 @@ namespace :monitoring do
 
         monitoring[controller][:controller][:statuses]["#{status}"]   ||= 0
         monitoring[controller][:controller][:statuses]["#{status}"]   +=1
+
+        monitoring[controller][:controller]["severity"] ||= {} 
+        monitoring[controller][:controller]["severity"] = controller_action_severity.try(:[], controller).try(:[], "__severity__") || {}
         
         #monitoring["WelcomeController"]["index"]
         monitoring[controller][action][:number_of_requests_in_hour][timestamp_hour] ||= 0
@@ -140,8 +149,10 @@ namespace :monitoring do
 
       #severity
       if timestamp_day == day and timestamp_month == month and timestamp_year == year
-        monitoring[:severity][severity] ||= 0
-        monitoring[:severity][severity] += 1
+        if severity_types_param.include?(severity)
+          monitoring[:severity][severity] ||= 0
+          monitoring[:severity][severity] += 1
+        end
         #monitoring[:severity][:number_of_error]   += 1 if severity == "ERROR"
         #monitoring[:severity][:number_of_fatal]   += 1 if severity == "FATAL"
         #monitoring[:severity][:number_of_unknown] += 1 if severity == "UNKNOWN"
@@ -391,8 +402,8 @@ module LogFileParser
         timestamp_year  = timestamp.year
 
         request_unique_id = line["request_unique_id"]
-        if timestamp_day == day and timestamp_month == month and timestamp_year == year
-          if line["name"] == "process_action.action_controller" and !request_unique_id.blank?
+        if timestamp_day == day and timestamp_month == month and timestamp_year == year and !request_unique_id.blank?
+          if line["name"] == "process_action.action_controller" 
             controller_name = line["payload"]["controller"]
             action_name     = line["payload"]["action"]
 
@@ -401,7 +412,7 @@ module LogFileParser
 
             indexes[controller_name][action_name][request_unique_id] = ""
             
-          elsif !request_unique_id.blank?
+          else
             severity = line["severity"]
             indexes["severity"] ||= {}
             indexes["severity"][severity] ||= {}

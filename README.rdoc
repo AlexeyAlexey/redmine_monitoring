@@ -1,10 +1,5 @@
 = redmine_as_monitoring_server
 
-Rotating log file
-https://gorails.com/guides/rotating-rails-production-logs-with-logrotate
-
-http://c3js.org/gettingstarted.html
-https://d3js.org/
 
 ```
 Installing a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
@@ -29,10 +24,15 @@ Uninstalling a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
        rake redmine:plugins:migrate NAME=redmine_monitoring VERSION=0 RAILS_ENV=production
 
   2. Remove your plugin from the plugins folder: #{RAILS_ROOT}/plugins
-  3. Restart app (redmine)
+
+  3. Delete from #{RAILS_ROOT}/config/additional_environment.rb
+            config.logstash.type = :file
+            config.logstash.path = 'log/production.log'
+
+  4. Restart app (redmine)
 ```
 
-    
+
 
 RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
 
@@ -50,7 +50,8 @@ Structure
                                          "view_runtime_max"   =>2666.410212, 
                                          "db_runtime_max"     =>442.17829100000006, 
                                          "duration_max"       =>4028.6884560000003, 
-                                         "statuses"           =>{"200"=>2}
+                                         "statuses"           =>{"200"=>2},
+                                         "severity"=>{"WARN"=>3, "ERROR"=> 1}
                                        }, 
                          "index"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
                                     "number_of_requests" =>2, 
@@ -65,21 +66,24 @@ Structure
                                          "view_runtime_max"   =>2666.410212, 
                                          "db_runtime_max"     =>442.17829100000006, 
                                          "duration_max"       =>4028.6884560000003, 
-                                         "statuses"           =>{"200"=>2}
+                                         "statuses"           =>{"200"=>2},
+                                         "severity"=>{"WARN"=>3, "ERROR"=> 1}
                                        }, 
                          "action_name_1"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
                                     "number_of_requests" =>2, 
                                     "view_runtime_max"   =>2666.410212, 
                                     "db_runtime_max"     =>442.17829100000006, 
                                     "duration_max"       =>4028.6884560000003, 
-                                    "statuses"           =>{"200"=>2}
+                                    "statuses"           =>{"200"=>2},
+                                    "severity"=>{"INFO"=>3, "ERROR" => 1}
                                   },
                          "action_name_2"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
                                     "number_of_requests" =>2, 
                                     "view_runtime_max"   =>2666.410212, 
                                     "db_runtime_max"     =>442.17829100000006, 
                                     "duration_max"       =>4028.6884560000003, 
-                                    "statuses"           =>{"200"=>2}
+                                    "statuses"           =>{"200"=>2},
+                                    "severity"=>{"INFO"=>3, "ERROR" => 1}
                                   }
                       },
 
@@ -114,6 +118,12 @@ Structure
 
 ```
 
+
+Rotating log file
+  https://gorails.com/guides/rotating-rails-production-logs-with-logrotate
+Charts
+  http://c3js.org/gettingstarted.html
+  https://d3js.org/
 
  Changelog
    v_._._ - __ November 2016

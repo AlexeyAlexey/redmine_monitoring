@@ -1,0 +1,39 @@
+<div id="pie_chart_controllers_actions_severity_<%=controller_name%>_<%=severity_type.downcase%>"></div>
+
+<script type="text/javascript">
+
+  var pie_chart_controllers_severity = c3.generate({
+    bindto: '#pie_chart_controllers_actions_severity_<%=controller_name%>_<%=severity_type.downcase%>',
+    size: {
+        height: 240,
+        width: 480
+    },
+    data: {
+        columns: [
+          <%monitoring.result[controller_name].keys.delete_if{|act| act == "controller"}.each do |action|%>
+            <%number_of_severity_type =  monitoring.result[controller_name][action].try(:[], "severity").try(:[], severity_type)%>
+            <%unless number_of_severity_type.blank?%>
+              ["<%=action%>", "<%=number_of_severity_type%>"],
+            <%end%>
+          <%end%>
+
+        ],
+        type : 'pie',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    pie: {
+        label: {
+            format: function (value, ratio, id) {
+                return d3.format('')(value);
+            }
+        }
+    },
+    legend: {
+      position: 'right'
+    }
+  });
+
+
+</script>
