@@ -1,5 +1,6 @@
 = redmine_as_monitoring_server
-
+For Redmine  2.5.2.stable
+For Redmine 3.2.0 you have to comment out "gem 'request_store'" in Gemfile
 
 ```
 Installing a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
@@ -34,7 +35,9 @@ Uninstalling a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
 
 
 
-RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" day=10 month=11 year=2016
+RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" project_id=1 day=10 month=11 year=2016 severity_types=ERROR,FATAL,WARN,INFO,DEBUG
+
+RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log"
 
 The rake above parses log file and generate metric that has the next structure 
 Structure is saved into column named "result" of "monitoring_results" table 
@@ -44,7 +47,7 @@ Without setting day, month, year the rake will parse day before
 
 Structure
 
-```
+
 {"WelcomeController"=>{  "controller"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
                                          "number_of_requests" =>2, 
                                          "view_runtime_max"   =>2666.410212, 
@@ -104,8 +107,7 @@ Structure
 
 }
 
-```
-```
+
 
 "number_of_requests_in_hour" => [24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
 
@@ -116,7 +118,7 @@ Structure
              "201"=> numbers
              }
 
-```
+
 
 
 Rotating log file

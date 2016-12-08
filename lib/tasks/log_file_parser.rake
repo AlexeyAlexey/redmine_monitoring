@@ -8,7 +8,7 @@ namespace :monitoring do
     project_id    = ENV["project_id"]
 
     log_file_path = ENV['log_file_path']
-    severity_types_param  = ENV['severity_types'].split(',')
+    severity_types_param  = (ENV['severity_types'] || "").split(',')
     time_now = Time.now
 
     day   = (ENV['day']   || (time_now.day - 1)).to_i

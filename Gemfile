@@ -1,4 +1,4 @@
-#gem 'request_store'
+gem 'request_store'
 gem 'logstash-logger'
 
 gem "redis"
