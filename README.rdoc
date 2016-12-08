@@ -2,7 +2,7 @@
 For Redmine  2.5.2.stable
 For Redmine 3.2.0 you have to comment out "gem 'request_store'" in Gemfile
 
-```
+
 Installing a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
 
   1. Clone from https://github.com/AlexeyAlexey/redmine_monitoring.git
@@ -20,6 +20,7 @@ Installing a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
   6. Restart app (redmine)
 
 Uninstalling a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
+
   1. Run the following command to downgrade your database (make a db backup before):
 
        rake redmine:plugins:migrate NAME=redmine_monitoring VERSION=0 RAILS_ENV=production
@@ -31,7 +32,7 @@ Uninstalling a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
             config.logstash.path = 'log/production.log'
 
   4. Restart app (redmine)
-```
+
 
 
 
@@ -48,14 +49,14 @@ Without setting day, month, year the rake will parse day before
 Structure
 
 
-{"WelcomeController"=>{  "controller"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
-                                         "number_of_requests" =>2, 
-                                         "view_runtime_max"   =>2666.410212, 
-                                         "db_runtime_max"     =>442.17829100000006, 
-                                         "duration_max"       =>4028.6884560000003, 
-                                         "statuses"           =>{"200"=>2},
-                                         "severity"=>{"WARN"=>3, "ERROR"=> 1}
-                                       }, 
+  {"WelcomeController"=>{  "controller"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                           "number_of_requests" =>2, 
+                                           "view_runtime_max"   =>2666.410212, 
+                                           "db_runtime_max"     =>442.17829100000006, 
+                                           "duration_max"       =>4028.6884560000003, 
+                                           "statuses"           =>{"200"=>2},
+                                           "severity"=>{"WARN"=>3, "ERROR"=> 1}
+                                         }, 
                          "index"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
                                     "number_of_requests" =>2, 
                                     "view_runtime_max"   =>2666.410212, 
@@ -104,19 +105,18 @@ Structure
 
   },
   severity: {"INFO"=>1087, "WARN"=>42, "DEBUG"=>1156, "FATAL"=>5, "ERROR"=>1}
-
-}
+  }
 
 
 
 "number_of_requests_in_hour" => [24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
 
-"statuses"=>{"200"=>2,
-             "300"=> numbers,
-             ....
+ "statuses"=>{"200"=>2,
+              "300"=> numbers,
+              ....
 
-             "201"=> numbers
-             }
+              "201"=> numbers
+              }
 
 
 
@@ -127,5 +127,6 @@ Charts
   http://c3js.org/gettingstarted.html
   https://d3js.org/
 
- Changelog
+
+Changelog
    v_._._ - __ November 2016
