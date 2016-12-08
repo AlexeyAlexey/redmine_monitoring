@@ -14,7 +14,7 @@ class MonitoringResultsController < ApplicationController
       @monitoring_days = @project.monitoring_results.order("monitoring_day").pluck("monitoring_day", "id")
   	  #@monitoring_days = MonitoringResult.order("monitoring_day").pluck("monitoring_day", "id")
     else
-      @monitoring_days = @project.monitoring_results.select("monitoring_day", "id").order("monitoring_day").map{|mon| [mon.monitoring_day, mon.id]}
+      @monitoring_days = @project.monitoring_results.select("monitoring_day, id").order("monitoring_day").map{|mon| [mon.monitoring_day, mon.id]}
       #@monitoring_days = MonitoringResult.select("monitoring_day", "id").order("monitoring_day").map{|mon| [mon.monitoring_day, mon.id]}
     end
     @monitoring = @project.monitoring_results.where(nil)
