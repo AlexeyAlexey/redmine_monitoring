@@ -1,0 +1,30 @@
+<div id="chart_runtime_actions_<%=h controller_name%>"> 
+</div>
+
+<script type="text/javascript"> 
+
+  var controller_number_of_requests_in_hour = c3.generate({
+    bindto: '#chart_runtime_actions_<%=h controller_name%>',
+    data: {
+    	x: 'x',
+        // iris data from R
+        columns: [
+
+          <%=raw(['x'] + monitoring.result[controller_name].keys.delete_if{|act| act == "controller"})%>,
+          <% chart_runtime_actions(monitoring, controller_name, ["view_runtime_max", "db_runtime_max", "duration_max"]) do |value|%>
+            <%value.each do |v|%>
+              <%=raw(v)%>,
+            <%end%>
+
+          <%end%>
+        ],
+        type : 'bar',
+        onclick: function (d, i) { console.log("onclick", d, i); },
+        onmouseover: function (d, i) { console.log("onmouseover", d, i); },
+        onmouseout: function (d, i) { console.log("onmouseout", d, i); }
+    },
+    axis: { x: {type: 'category', tick: { rotate: 75, multiline: false}, height: 130} }    
+  });
+
+
+</script>

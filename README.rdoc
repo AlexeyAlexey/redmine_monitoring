@@ -1,3 +1,134 @@
 = redmine_as_monitoring_server
 
-Description goes here
+For Redmine  2.5.2.stable
+
+For Redmine 3.2.0 you have to comment out "gem 'request_store'" in Gemfile
+
+
+Installing a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
+
+  1. Clone from https://github.com/AlexeyAlexey/redmine_monitoring.git
+  2. Copy redmine_monitoring to plugins folder of redmine
+  3. bundle install
+  4. Run the following command in #{RAILS_ROOT} to upgrade your database (make a db backup before). 
+
+        
+    rake redmine:plugins:migrate NAME=redmine_monitoring  RAILS_ENV=production
+
+  5. Add to #{RAILS_ROOT}/config/additional_environment.rb
+            config.logstash.type = :file
+            config.logstash.path = 'log/production.log'
+        
+  6. Restart app (redmine)
+
+Uninstalling a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
+
+  1. Run the following command to downgrade your database (make a db backup before):
+
+       rake redmine:plugins:migrate NAME=redmine_monitoring VERSION=0 RAILS_ENV=production
+
+  2. Remove your plugin from the plugins folder: #{RAILS_ROOT}/plugins
+
+  3. Delete from #{RAILS_ROOT}/config/additional_environment.rb
+            config.logstash.type = :file
+            config.logstash.path = 'log/production.log'
+
+  4. Restart app (redmine)
+
+
+
+
+RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" project_id=1 day=10 month=11 year=2016 severity_types=ERROR,FATAL,WARN,INFO,DEBUG
+
+RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log"
+
+The rake above parses log file and generate metric that has the next structure 
+Structure is saved into column named "result" of "monitoring_results" table 
+
+If set day, month, year the rake will parse information that was generaten in setting day, month, year
+Without setting day, month, year the rake will parse day before 
+
+Structure
+
+
+  {"WelcomeController"=>{  "controller"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                           "number_of_requests" =>2, 
+                                           "view_runtime_max"   =>2666.410212, 
+                                           "db_runtime_max"     =>442.17829100000006, 
+                                           "duration_max"       =>4028.6884560000003, 
+                                           "statuses"           =>{"200"=>2},
+                                           "severity"=>{"WARN"=>3, "ERROR"=> 1}
+                                         }, 
+                         "index"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                    "number_of_requests" =>2, 
+                                    "view_runtime_max"   =>2666.410212, 
+                                    "db_runtime_max"     =>442.17829100000006, 
+                                    "duration_max"       =>4028.6884560000003, 
+                                    "statuses"           =>{"200"=>2}
+                                  }
+                      },
+  "ControllerName": {  "controller"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                         "number_of_requests" =>2, 
+                                         "view_runtime_max"   =>2666.410212, 
+                                         "db_runtime_max"     =>442.17829100000006, 
+                                         "duration_max"       =>4028.6884560000003, 
+                                         "statuses"           =>{"200"=>2},
+                                         "severity"=>{"WARN"=>3, "ERROR"=> 1}
+                                       }, 
+                         "action_name_1"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                    "number_of_requests" =>2, 
+                                    "view_runtime_max"   =>2666.410212, 
+                                    "db_runtime_max"     =>442.17829100000006, 
+                                    "duration_max"       =>4028.6884560000003, 
+                                    "statuses"           =>{"200"=>2},
+                                    "severity"=>{"INFO"=>3, "ERROR" => 1}
+                                  },
+                         "action_name_2"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
+                                    "number_of_requests" =>2, 
+                                    "view_runtime_max"   =>2666.410212, 
+                                    "db_runtime_max"     =>442.17829100000006, 
+                                    "duration_max"       =>4028.6884560000003, 
+                                    "statuses"           =>{"200"=>2},
+                                    "severity"=>{"INFO"=>3, "ERROR" => 1}
+                                  }
+                      },
+
+
+  "controller" => {
+  	"number_of_requests_in_hour" => [00, 01, 02, 03, 04, 05, 06, 07, 08, 09, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23],
+    "number_of_requests" => 279,
+    "view_runtime_max"   => 0.8550800000000001,
+    "db_runtime_max"     => 1.141331,
+    "duration_max"       => 4762.594518,
+    "statuses"           => {"200" => 133, 
+                             "302" => 7, 
+                             "404" => 1
+                            }
+
+  },
+  severity: {"INFO"=>1087, "WARN"=>42, "DEBUG"=>1156, "FATAL"=>5, "ERROR"=>1}
+  }
+
+
+
+"number_of_requests_in_hour" => [24, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23]
+
+ "statuses"=>{"200"=>2,
+              "300"=> numbers,
+              ....
+
+              "201"=> numbers
+              }
+
+
+
+
+Rotating log file
+  https://gorails.com/guides/rotating-rails-production-logs-with-logrotate
+Charts
+  http://c3js.org/gettingstarted.html
+  https://d3js.org/
+
+
+Changelog
+   v0.1.0.beta - 08 December 2016

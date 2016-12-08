@@ -1,0 +1,43 @@
+
+
+<%content_for :header_tags do%>
+  <%=stylesheet_link_tag('https://libraries.cdnhttps.com/ajax/libs/c3/0.4.11-rc4/c3.min.css')%>
+  <%=javascript_include_tag('https://d3js.org/d3.v3.min.js')%>
+  <%=javascript_include_tag('https://libraries.cdnhttps.com/ajax/libs/c3/0.4.11-rc4/c3.min.js')%>
+ <%end%>
+
+
+<div id="filter">
+  <%=render partial: "filter", locals: {monitoring: @monitoring, all_controllers: @all_controllers, monitoring_days: @monitoring_days, filter_form: @filter_form}%>
+</div>
+
+<%unless @monitoring.blank?%>
+  <br>
+  <h1><%=l(:monitoring_day, scope: :redmine_monitoring)%> <%=h @monitoring.monitoring_day%></h1>
+  <br>
+  <p>number_of_requests: <%=@monitoring.result["controllers"]["number_of_requests"]%> </p>
+  <p>view_runtime_max:   <%=@monitoring.result["controllers"]["view_runtime_max"]%> ms</p>
+  <p>db_runtime_max:     <%=@monitoring.result["controllers"]["db_runtime_max"]%> ms</p>
+  <p>duration_max:       <%=@monitoring.result["controllers"]["duration_max"]%> ms</p>
+
+  <%@monitoring.result["severity"].each_pair do |name, value|%>
+    <p><%=h name%>: <%=h value%></p>
+  <%end%>
+   
+
+
+  <div id="summarized_charts">
+    <%=render partial: "summarized_charts", locals: {monitoring: @monitoring, all_controllers: @all_controllers, controllers_list: @controllers_list}%>
+  </div>
+
+
+
+  <div id="detail_charts">
+    <%=render partial: "detail_charts", locals: {monitoring: @monitoring, controllers_list: @controllers_list}%>
+  </div>
+
+
+<%end%>
+ 
+
+

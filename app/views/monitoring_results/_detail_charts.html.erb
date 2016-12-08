@@ -1,0 +1,57 @@
+<div id="container_actions">
+  <%@controllers_list.each do |controller_name|%>
+    <div class="container_actions" style="position: relative; display: inline-block; border: solid;">
+      <h1><%=h controller_name%> <%=l(:number_of_requests_to_action, scope: [:redmine_monitoring])%></h1>
+      <%=render partial: "pie_chart_actions", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+    </div>
+  <%end%>
+</div>
+
+<div id="container_actions_number_of_requests_in_hour">
+  <%@controllers_list.each do |controller_name|%>
+    <%contr = @monitoring.result[controller_name]["controller"]%>
+    <h1><%=controller_name%> <%=l(:number_of_requests_in_hour_to_action, scope: [:redmine_monitoring])%></h1>
+    <p>number_of_requests: <%=contr["number_of_requests"]%> </p>
+    <p>view_runtime_max:   <%=contr["view_runtime_max"]%> ms</p>
+    <p>db_runtime_max:     <%=contr["db_runtime_max"]%> ms</p>
+    <p>duration_max:       <%=contr["duration_max"]%> ms</p>
+    <%=render partial: "chart_actions_number_of_requests_in_hour", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+  <%end%>
+</div>
+
+
+<%@controllers_list.each do |controller_name|%>
+  <div class="container_controller_statuses" style="position: relative; display: inline-block; border: solid;">
+    <h1><%=h controller_name%> statuses</h1>
+    <%=render partial: "pie_chart_controller_statuses", locals: {monitoring: @monitoring, controller_name: controller_name}%>
+  </div>
+<%end%>
+
+<div id="container_controllers_actions_severity" >
+  <h1><%=l(:number_of_requests_controllers_actions_severity, scope: :redmine_monitoring) unless @controllers_list.blank?%></h1>
+  <%@controllers_list.each do |controller_name|%>
+    <div class="pie_container_controllers_actions_severity" style="position: relative; display: inline-block; border: solid;">
+      <h1><%=controller_name%></h1>
+      <%monitoring.result[controller_name]["controller"]["severity"].keys.each do |severity_type|%>
+        <h1><%=severity_type%></h1>
+        <%=render partial: "pie_container_controllers_actions_severity", locals: {monitoring: monitoring, controller_name: controller_name, severity_type: severity_type}%>
+      <%end%>
+    </div>
+  <%end%>
+</div>
+
+
+<%@controllers_list.each do |controller_name|%>
+  <div style="border: 1px solid; margin-top: 10px;">
+    <%actions_list = @monitoring.result[controller_name].keys.delete_if{|el| el == "controller"}%>
+    <h1><%=h controller_name%></h1>
+    <%actions_list.each do |action_name|%>
+      <div class="container_controller_action_statuses" style="position: relative; display: inline-block; border: solid;">
+        <%=render partial: "pie_chart_controller_action_statuses", locals: {monitoring: @monitoring, controller_name: controller_name, action_name: action_name}%>
+        </div>
+    <%end%>
+  </div>
+<%end%>
+
+
+  

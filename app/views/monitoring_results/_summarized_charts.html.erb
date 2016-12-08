@@ -1,0 +1,35 @@
+<div id="container_controllers">
+  <%=render partial: "pie_chart_controllers", locals: {monitoring: monitoring, controllers_list: all_controllers}%>
+</div>
+<div id="container_controllers_statuses">
+  <%=render partial: "pie_chart_controllers_statuses", locals: {monitoring: monitoring}%>
+</div>
+<div id="container_controllers_number_of_requests_in_hour">
+    <%=render partial: "chart_controllers_number_of_requests_in_hour", locals: {monitoring: monitoring, controllers_list: all_controllers}%>
+</div>
+
+<div id="container_controllers_severity">
+  <h1><%=l(:number_of_requests_severity, scope: :redmine_monitoring)%></h1>
+  <%monitoring.result["severity"].keys.each do |severity_type|%>
+    <div class="pie_container_controllers_severity" style="position: relative; display: inline-block; border: solid;">
+      <h1><%=severity_type%></h1>
+      <%=render partial: "pie_container_controllers_severity", locals: {monitoring: monitoring, all_controllers: all_controllers, severity_type: severity_type}%>
+    </div>
+  <%end%>
+</div>
+
+<div id="runtime_charts">
+    <div id="runtime_controllers_charts">
+      <h1>Controllers runtime max</h1>
+      <%=render partial: "chart_runtime_controllers", locals: {monitoring: monitoring, all_controllers: all_controllers}%>
+    </div>
+     <div id="runtime_actions_charts">
+      <%controllers_list.each do |controller_name|%>
+        <div class="runtime_actions_<%=h controller_name%>" style="position: relative; display: inline-block; border: solid;">
+          <h1><%=h controller_name%> actions runtime max</h1>
+          <%=render partial: "chart_runtime_actions", locals: {monitoring: monitoring, controller_name: controller_name}%>
+        </div>
+      <%end%>
+    </div>
+  </div>
+

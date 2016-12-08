@@ -1,0 +1,14 @@
+# English strings go here for Rails i18n
+ru:
+  # my_label: "My label"
+  redmine_monitoring:
+    controllers_number_of_requests: Количество запросов к контроллеру
+    number_of_response_statuses: Количество статусов ответов
+    number_of_requests_in_hour_to_controller: Количество запросов к контроллеру в час
+    date: Дата
+    controller_name: Контроллер
+    monitoring_day: Monitoring Day
+    number_of_requests_in_hour_to_action: Количество запросов в час к action
+    number_of_requests_to_action: Number of requests to action
+    number_of_requests_severity: Количество запросов к контроллеру в котором было сгенерировано сообщение определенного типа
+    number_of_requests_controllers_actions_severity: Количество запросов к action в котором было сгенерировано сообщение определенного типа

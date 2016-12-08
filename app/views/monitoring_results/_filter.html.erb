@@ -1,0 +1,54 @@
+<div id="query_form_content" class="hide-when-print">
+  <fieldset id="filters" class="collapsible">
+    <legend onclick="toggleFieldset(this);">Фильтры</legend>
+    <div style="display: block;">
+      <%=form_tag({:controller => 'monitoring_results', :action => 'index'}, :method => "get", :id => "form_filter") do%>
+        <%=hidden_field_tag "id", @project.identifier %>
+        <%=hidden_field_tag "filter[generated_monitoring_day_id]", monitoring.try(:id) %>
+        <table style="width:100%">
+          <tbody>
+            <tr>
+              <td>
+                <table id="filters-table">
+                  <tbody> 
+                    <tr id="" class="filter">
+                      <td class="field"><b><%=l :controller_name, scope: [:redmine_monitoring]%></b></td>
+                      <td class="operator"></td>
+                    
+                      <td class="values">  
+                        <%=select_tag "filter[controllers]", options_for_select(all_controllers, filter_form["controllers"]), multiple: true, include_blank: true, id: "filter_controllers"%> 
+                      </td>
+                    </tr> 
+                    <tr id="" class="filter">
+                      <td class="field"><b><%=l :date, scope: [:redmine_monitoring]%></b></td>
+                      <td class="operator"></td>
+                      <td class="values">
+                        <%=select_tag "filter[monitoring_day_id]", options_for_select(monitoring_days, monitoring.try(:id)), include_blank: true%> 
+                      </td>
+                    </tr> 
+                    <tr id="" class="filter">
+                      <td class="field"></td>
+                      <td class="operator"></td>
+                      <td class="values"></td>
+                    </tr>    
+                    <tr id="" class="filter">
+                      <td class="field"></td>
+                      <td class="operator"></td>
+                      <td class="values"></td>
+                    </tr>    
+                    <tr class="filter"></tr>                
+                              
+                  </tbody>
+                </table> 
+              </td> 
+              <td class="add-filter">
+                
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <%= submit_tag l(:button_apply), :class => 'button-small' %>
+      <%end%>
+    </div>
+  </fieldset> 
+</div>
