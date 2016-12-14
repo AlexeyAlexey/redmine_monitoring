@@ -383,8 +383,8 @@ namespace :monitoring do
     LogFileParser.create_indexes(day, month, year, log_file_path, output_folder_path)
   end#task :create_indexes => :environment 
 
-  #RAILS_ENV=production rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/2" day=10 month=11 year=2016  
-  #RAILS_ENV=development rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/2" day=10 month=11 year=2016  
+  #RAILS_ENV=production rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/selected.log" day=10 month=11 year=2016  
+  #RAILS_ENV=development rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/selected.log day=10 month=11 year=2016  
   task :select_day => :environment do
      
     #file_path = "./log/production.log"
@@ -397,7 +397,7 @@ namespace :monitoring do
     month = (ENV['month'] || time_now.month).to_i
     year  = (ENV['year']  || time_now.year).to_i
     
-    write_to_file = File.new("#{output_folder_path}/sected_log.txt", "a")
+    write_to_file = File.new(output_folder_path, "a")
     
     IO.foreach(log_file_path) do |x| 
       line = {}
