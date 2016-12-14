@@ -1,9 +1,9 @@
-<div id="pie_chart_<%=controller_name%>_statuses"></div>
+<div id="pie_chart_<%=controller_name.gsub('::', '_').downcase%>_statuses"></div>
 
 <script type="text/javascript">
 
   var pie_chart_controller_statuses = c3.generate({
-    bindto: '#pie_chart_<%=controller_name%>_statuses',
+    bindto: '#pie_chart_<%=controller_name.gsub('::', '_').downcase%>_statuses',
     data: {
         // iris data from R
         columns: [

@@ -5,7 +5,7 @@
 </div>
 
 <h1><%=controller_name%></h1>
-<div id="chart_<%=controller_name.downcase%>_number_of_requests_in_hour">
+<div id="chart_<%=controller_name.gsub('::', '_').downcase%>_number_of_requests_in_hour">
   
 </div>
 <%number_of_requests_in_hour = monitoring.result[controller_name]["controller"]["number_of_requests_in_hour"]
@@ -15,7 +15,7 @@
 <script type="text/javascript">
 
   var controller_number_of_requests_in_hour = c3.generate({
-    bindto: '#chart_<%=controller_name.downcase%>_number_of_requests_in_hour',
+    bindto: '#chart_<%=controller_name.gsub('::', '_').downcase%>_number_of_requests_in_hour',
     size: {
         height: 240,
         width: 480

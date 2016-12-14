@@ -1,12 +1,12 @@
 <h4><%=action_name%></h4>
-<div id="pie_chart_<%=controller_name.downcase%>_<%=action_name.downcase%>_statuses" >
+<div id="pie_chart_<%=controller_name.gsub('::', '_').downcase%>_<%=action_name.downcase%>_statuses" >
   
 </div>
   
 <script type="text/javascript">
 
   var pie_chart_controller_statuses = c3.generate({
-    bindto: '#pie_chart_<%=controller_name.downcase%>_<%=action_name.downcase%>_statuses',
+    bindto: '#pie_chart_<%=controller_name.gsub('::', '_').downcase%>_<%=action_name.downcase%>_statuses',
     size: {
         width: 200,
         height: 200,

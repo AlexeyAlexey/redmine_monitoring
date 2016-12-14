@@ -1,9 +1,9 @@
-<div id="pie_chart_controllers_actions_severity_<%=controller_name%>_<%=severity_type.downcase%>"></div>
+<div id="pie_chart_controllers_actions_severity_<%=controller_name.gsub('::', '_').downcase%>_<%=severity_type.downcase%>"></div>
 
 <script type="text/javascript">
 
   var pie_chart_controllers_severity = c3.generate({
-    bindto: '#pie_chart_controllers_actions_severity_<%=controller_name%>_<%=severity_type.downcase%>',
+    bindto: '#pie_chart_controllers_actions_severity_<%=controller_name.gsub('::', '_').downcase%>_<%=severity_type.downcase%>',
     size: {
         height: 240,
         width: 480

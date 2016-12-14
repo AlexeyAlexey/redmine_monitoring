@@ -1,10 +1,10 @@
-<div id="chart_runtime_actions_<%=h controller_name%>"> 
+<div id="chart_runtime_actions_<%=controller_name.gsub('::', '_').downcase%>"> 
 </div>
 
 <script type="text/javascript"> 
 
   var controller_number_of_requests_in_hour = c3.generate({
-    bindto: '#chart_runtime_actions_<%=h controller_name%>',
+    bindto: '#chart_runtime_actions_<%=controller_name.gsub('::', '_').downcase%>',
     data: {
     	x: 'x',
         // iris data from R

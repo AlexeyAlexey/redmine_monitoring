@@ -382,6 +382,51 @@ namespace :monitoring do
     
     LogFileParser.create_indexes(day, month, year, log_file_path, output_folder_path)
   end#task :create_indexes => :environment 
+
+  #RAILS_ENV=production rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/2" day=10 month=11 year=2016  
+  #RAILS_ENV=development rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/2" day=10 month=11 year=2016  
+  task :select_day => :environment do
+     
+    #file_path = "./log/production.log"
+    output_folder_path = ENV['output_folder_path']
+    log_file_path = ENV['log_file_path']
+    
+    time_now = Time.now
+
+    day   = (ENV['day']   || (time_now.day - 1)).to_i
+    month = (ENV['month'] || time_now.month).to_i
+    year  = (ENV['year']  || time_now.year).to_i
+    
+    write_to_file = File.new("#{output_folder_path}/sected_log.txt", "a")
+    
+    IO.foreach(log_file_path) do |x| 
+      line = {}
+      begin
+        line = JSON.parse(x)
+      rescue Exception => e
+        
+      end
+
+      unless line.empty?
+        severity        = line["severity"]
+        timestamp_str   = line["@timestamp"] || line["time"]
+        timestamp       = Time.parse(timestamp_str)
+        timestamp_hour  = Time.parse(timestamp_str).hour
+        timestamp_day   = Time.parse(timestamp_str).day
+        timestamp_month = Time.parse(timestamp_str).month
+        timestamp_year  = Time.parse(timestamp_str).year
+
+        if line["name"] == "process_action.action_controller" and timestamp_day == day and timestamp_month == month and timestamp_year == year
+          write_to_file.puts(line.to_json)
+        end
+      end
+      
+      
+      
+    end#IO.foreach(file_path) do |x| 
+   
+
+  end#task :find => :environment
 end
 
 
