@@ -330,7 +330,7 @@ namespace :monitoring do
       
       unless line.empty?
         request_unique_id = line["request_unique_id"]
-        if line["name"] == "process_action.action_controller" and line["payload"]["controller"] == controler and !request_unique_id.blank?
+        if line["name"] == "process_action.action_controller" and (line["payload"]["controller"] == controler or controler.nil?) and !request_unique_id.blank?
           controler_request_unique_id[request_unique_id] = ""
         elsif !request_unique_id.blank? and line["severity"] == severity
           severity_request_unique_id[request_unique_id] = ""
@@ -339,29 +339,36 @@ namespace :monitoring do
       end
       
     end#IO.foreach(file_path) do |x| 
+
+    
     request_unique_ids = Hash[ *(severity_request_unique_id.keys & controler_request_unique_id.keys).map{|el| [el, File.new("#{output_folder_path}/#{el}.txt", "a")]}.flatten ]
     
-    IO.foreach(log_file_path) do |x| 
-      line = {}
-      begin
-        line = JSON.parse(x)
-      rescue Exception => e
+    not_in_controller_request_unique_ids = Hash[ *(severity_request_unique_id.keys - controler_request_unique_id.keys).map{|el| [el, File.new("#{output_folder_path}/not_in_controller_#{el}.txt", "a")]}.flatten ]
+    
+    if !request_unique_ids.empty? or !not_in_controller_request_unique_ids.empty?
+      IO.foreach(log_file_path) do |x| 
+        line = {}
+        begin
+          line = JSON.parse(x)
+        rescue Exception => e
         
-      end
-      
-      unless line.empty?
-        request_unique_id = line["request_unique_id"]
-        if request_unique_ids.has_key?(request_unique_id)
-           #if line["name"] == "process_action.action_controller"
-             request_unique_ids[request_unique_id].puts(line.to_json)
-           #else
-             #request_unique_ids[request_unique_id].puts(line["message"])
-           #end
         end
-      end
       
-    end#IO.foreach(file_path) do |x| 
-   
+        unless line.empty?
+          request_unique_id = line["request_unique_id"]
+          if request_unique_ids.has_key?(request_unique_id)
+             #if line["name"] == "process_action.action_controller"
+             request_unique_ids[request_unique_id].puts(line.to_json)
+             #else
+               #request_unique_ids[request_unique_id].puts(line["message"])
+             #end
+          elsif not_in_controller_request_unique_ids.has_key?(request_unique_id)
+            not_in_controller_request_unique_ids[request_unique_id].puts(line.to_json)
+          end
+        end
+      
+      end#IO.foreach(file_path) do |x| 
+    end
 
   end#task :find => :environment
   #developing
@@ -383,13 +390,14 @@ namespace :monitoring do
     LogFileParser.create_indexes(day, month, year, log_file_path, output_folder_path)
   end#task :create_indexes => :environment 
 
-  #RAILS_ENV=production rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/selected.log" day=10 month=11 year=2016  
-  #RAILS_ENV=development rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/selected.log day=10 month=11 year=2016  
+  #RAILS_ENV=production rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/selected.log" day=10 month=11 year=2016 only="action_controller"
+  #RAILS_ENV=development rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/selected.log day=10 month=11 year=2016 only="action_controller" 
   task :select_day => :environment do
      
     #file_path = "./log/production.log"
     output_folder_path = ENV['output_folder_path']
     log_file_path = ENV['log_file_path']
+    only = ENV["only"]
     
     time_now = Time.now
 
@@ -416,8 +424,12 @@ namespace :monitoring do
         timestamp_month = Time.parse(timestamp_str).month
         timestamp_year  = Time.parse(timestamp_str).year
 
-        if line["name"] == "process_action.action_controller" and timestamp_day == day and timestamp_month == month and timestamp_year == year
-          write_to_file.puts(line.to_json)
+        if timestamp_day == day and timestamp_month == month and timestamp_year == year
+          if only == "action_controller" and line["name"] == "process_action.action_controller" and 
+            write_to_file.puts(line.to_json)
+          else
+            write_to_file.puts(line.to_json)
+          end
         end
       end
       
