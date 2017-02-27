@@ -5,6 +5,7 @@ class MonitoringResultsController < ApplicationController
   #before_filter :find_project_by_project_id
   before_filter :find_project
   before_filter :authorize
+  before_filter :set_settings
 
 
   def index
@@ -40,4 +41,12 @@ class MonitoringResultsController < ApplicationController
     end
     
   end
+
+  private
+
+    def set_settings
+      @url_c3_min_css   = Setting.plugin_redmine_monitoring["url_c3_min_css"]   || 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.css'
+      @url_c3_min_js    = Setting.plugin_redmine_monitoring["url_c3_min_js"]    || 'https://cdnjs.cloudflare.com/ajax/libs/c3/0.4.11/c3.min.js'
+      @url_d3_v3_min_js = Setting.plugin_redmine_monitoring["url_d3_v3_min_js"] || 'https://d3js.org/d3.v3.min.js'
+    end
 end

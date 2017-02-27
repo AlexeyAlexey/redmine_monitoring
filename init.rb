@@ -32,4 +32,6 @@ Redmine::Plugin.register :redmine_monitoring do
   end
 
   menu :project_menu, :monitoring_results, { :controller => 'monitoring_results', :action => 'index' }, :caption => 'Redmine Monitoring Results'
+
+  settings :default => {'empty' => true}, :partial => 'settings/redmine_monitoring/settings'
 end
