@@ -37,18 +37,26 @@ Uninstalling a plugin (http://www.redmine.org/projects/redmine/wiki/Plugins)
 
 
 
+ Each line of the log file is json that has the following structures
 
-RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" project_id=1 day=10 month=11 year=2016 severity_types=ERROR,FATAL,WARN,INFO,DEBUG
+  {"message":"message from app","@timestamp":"2016-12-01T14:35:05.350+00:00","@version":"1","severity":"INFO","host":"vagrant-ubuntu-trusty-64","request_unique_id": “116728608478c82692f5daa274f11484054487   or null”} 
 
-RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log"
+  {"name":"process_action.action_controller","payload":{"controller":"WelcomeController","action":"index","params":{"controller":"welcome","action":"index"},"format":"html","method":"GET","path":"/","status":200,"view_runtime":1034.6096279997037,"db_runtime":87.02041999999999,"ip":"192.168.55.1","user_id":2,"session_id":"f7073efe207c18809c11f4262bde5cac","headers":{"HTTP_USER_AGENT":"Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36","GATEWAY_INTERFACE":"CGI/1.1","PATH_INFO":"/","QUERY_STRING":"","REMOTE_ADDR":"192.168.55.1","REQUEST_METHOD":"GET","REQUEST_URI":"http://192.168.55.60:8585/","SCRIPT_NAME":"","SERVER_NAME":"192.168.55.60","SERVER_PORT":"8585","SERVER_PROTOCOL":"HTTP/1.1","SERVER_SOFTWARE":"WEBrick/1.3.1 (Ruby/2.2.4/2015-12-16)","HTTP_HOST":"192.168.55.60:8585","HTTP_CONNECTION":"keep-alive","HTTP_CACHE_CONTROL":null,"HTTP_UPGRADE_INSECURE_REQUESTS":"1","HTTP_ACCEPT":"text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8","HTTP_ACCEPT_ENCODING":"gzip, deflate, sdch","HTTP_ACCEPT_LANGUAGE":"en-US,en;q=0.8","HTTP_VERSION":"HTTP/1.1","REQUEST_PATH":"/","ORIGINAL_FULLPATH":"/","HTTP_REFERER":""}},"time":"2017-02-09T07:45:37.394+00:00","transaction_id":"a85f2756d5f029841ed7","end":"2017-02-09T07:45:38.860+00:00","children":[],"duration":null,"@timestamp":"2017-02-09T07:45:38.861+00:00","@version":"1","severity":"INFO","host":"vagrant-ubuntu-trusty-64","request_unique_id":"1002434062e0ec06dc1360eb389a1486626337"}
 
-The rake above parses log file and generate metric that has the next structure 
-Structure is saved into column named "result" of "monitoring_results" table 
+  
+ Using request_unique_id of a record you can find all records that were generated in a request (Records from the log file can be recognised as generated in a request by using request_unique_id)
 
-If set day, month, year the rake will parse information that was generaten in setting day, month, year
-Without setting day, month, year the rake will parse day before 
 
-Structure
+
+  RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log" project_id=1 day=10 month=11 year=2016 severity_types=ERROR,FATAL,WARN,INFO,DEBUG
+ 
+  RAILS_ENV=production rake monitoring:statistic_parse_log_file log_file_path="./log/production.log"
+
+  The rake above parses (analyzes) the log file and generates a metric that has the following structure. The structure is saved into the column named  “result” of the “monitoring_results” table
+
+  If you set a day, month, year the rake parses (analyzes) the information that was generated in the set day, month, year. Without setting a day, month, year the rake will parse the day before
+
+ Structure
 
 
   {"WelcomeController"=>{  "controller"=>{ "number_of_requests_in_hour"=>[0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], 
@@ -119,6 +127,66 @@ Structure
 
               "201"=> numbers
               }
+
+
+
+RAILS_ENV=production rake monitoring:read_and_write_into_console log_file_path="./log/production.log" 
+  
+RAILS_ENV=production rake monitoring:read_and_write_into_console log_file_path="./log/production.log"  >  ./log/development_wr.log
+
+
+The log file is read line by line (line) and the following information is printed into the console
+
+ line["message"] + "  request_unique_id:#{line["request_unique_id"]}"
+ => "message from app request_unique_id:116728608478c82692f5daa274f11484054487"
+
+
+Output can be directed to a file by using “>”
+
+
+RAILS_ENV=production rake monitoring:tail_f log_file_path="./log/production.log"
+The rake executes “tail -f ./log/production.log” and prints the following message to the console
+
+ line["message"]
+ => “message from app”
+
+
+To read the log file line by line as json and then write as json into a redis queue you can use  
+
+ rake monitoring:read_and_write_into_redis log_file_path="./log/production.log" begin_hour=1 begin_day=10 begin_month=11 begin_year=2016 redis_url='redis://localhost:6379/11' redis_queue='redmine_monitoring'
+
+
+ rake monitoring:stream_to_redis log_file_path="./log/production.log" redis_url='redis://localhost:6379/11' redis_queue='redmine_monitoring'
+
+
+
+
+To find records about a request you can use the following rake. If records are found
+a file will be created under the name that is taken from request_unique_id and then all the records related to the request will be written into the created file.
+
+ RAILS_ENV=production rake monitoring:find log_file_path="./log/production.log" output_folder_path="./log/2" controler='MonitoringResultsController' severity='ERROR'
+
+
+The following rake creates the file named indexes.txt and writes information with the following structure 
+
+ {controller_name => {action_name => [request_unique_ids]},
+   "severity" => {serverity_type => [request_unique_ids]}
+ }
+
+
+
+
+ RAILS_ENV=production rake monitoring:create_indexes log_file_path="./log/production.log" output_folder_path="./log/2" day=30 month=11 year=2016
+
+
+
+The following rake selects all records related to a set day, month, year and then writes them into a file that was set in output_folder_path
+
+ RAILS_ENV=production rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/selected.log" day=10 month=11 year=2016 only="action_controller"
+
+ RAILS_ENV=production rake monitoring:select_day log_file_path="./log/production.log" output_folder_path="./log/selected.log" day=10 month=11 year=2016 
+
+
 
 
 
